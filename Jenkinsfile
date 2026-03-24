@@ -42,5 +42,17 @@ pipeline {
                 sh 'docker push ${REGISTRY}/${NODE_IMG}:latest'
             }
         }
+
+        // 5. 배포 명세서를 쿠버네티스 클러스터에 배포 (완벽한 CD 자동화)
+        stage('Deploy to Kubernetes') {
+            steps {
+                // k8s/ 내부의 배포 명세서(YAML)를 쿠버네티스에 적용시킵니다.
+                sh 'kubectl apply -f k8s/'
+                
+                // 새로운 버전의 애플리케이션 파드가 완벽하게 뜰 때까지 기다립니다.
+                sh 'kubectl rollout status deployment/spring-boot-app'
+                sh 'kubectl rollout status deployment/node-app'
+            }
+        }
     }
 }
