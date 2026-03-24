@@ -11,7 +11,7 @@ export default function LoginPage() {
   const { login, isAuthenticated, isInitializing } = useAuth();
   const router = useRouter();
 
-  const USER_API_URL = 'http://localhost:8080/api/users';
+  const USER_API_URL = 'http://localhost:8081/api/users';
 
   useEffect(() => {
     if (!isInitializing && isAuthenticated) {
