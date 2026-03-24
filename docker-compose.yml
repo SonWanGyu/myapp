@@ -1,0 +1,66 @@
+version: '3.8'
+
+services:
+  oracle-db:
+    image: gvenzl/oracle-xe:21-slim
+    container_name: oracle-db
+    environment:
+      - ORACLE_PASSWORD=oracle
+    ports:
+      - "1521:1521"
+    networks:
+      - app-network
+    volumes:
+      - oracle-data:/opt/oracle/oradata
+
+  spring-boot-app:
+    build:
+      context: ./spring-boot
+    container_name: spring-boot-app
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:oracle:thin:@oracle-db:1521/XE
+      - SPRING_DATASOURCE_USERNAME=system
+      - SPRING_DATASOURCE_PASSWORD=oracle
+      - SPRING_DATASOURCE_DRIVER_CLASS_NAME=oracle.jdbc.OracleDriver
+    depends_on:
+      - oracle-db
+    restart: on-failure
+    networks:
+      - app-network
+
+  spring-batch-app:
+    build:
+      context: ./spring-batch-app
+    container_name: spring-batch-app
+    ports:
+      - "8081:8081"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:oracle:thin:@oracle-db:1521/XE
+      - SPRING_DATASOURCE_USERNAME=system
+      - SPRING_DATASOURCE_PASSWORD=oracle
+      - SPRING_DATASOURCE_DRIVER_CLASS_NAME=oracle.jdbc.OracleDriver
+    depends_on:
+      - oracle-db
+    restart: on-failure
+    networks:
+      - app-network
+
+  node-app:
+    build:
+      context: ./node-app
+    container_name: node-app
+    ports:
+      - "80:3000"
+    depends_on:
+      - spring-boot-app
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  oracle-data:
