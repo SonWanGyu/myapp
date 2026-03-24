@@ -34,7 +34,7 @@ services:
     environment:
       - ORACLE_PASSWORD=mypassword
       - APP_USER=myuser
-      - APP_PASSWORD=mypassword
+      - APP_USER_PASSWORD=mypassword
     ports:
       - "1521:1521"
     volumes:
