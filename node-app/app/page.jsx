@@ -5,7 +5,7 @@ import { useAuth } from './context/AuthContext';
 
 export default function Home() {
   const [boards, setBoards] = useState([]);
-  const API_URL = 'http://localhost:8080/api/boards';
+  const API_URL = `http://${window.location.hostname}:8080/api/boards`;
   const { isInitializing, isAuthenticated } = useAuth();
   const router = useRouter();
 
