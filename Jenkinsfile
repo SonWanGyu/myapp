@@ -49,6 +49,11 @@ pipeline {
                 // k8s/ 내부의 배포 명세서(YAML)를 쿠버네티스에 적용시킵니다.
                 sh 'kubectl apply -f k8s/'
                 
+                // (중요) image 태그가 'latest'로 고정되어 있으면 쿠버네티스가 파일 변경을 눈치채지 못합니다!!
+                // 따라서 새로 구워진 이미지를 무조건 다시 가져오도록 파드를 강제로 껐다 켜게(롤아웃 재시작) 지시합니다.
+                sh 'kubectl rollout restart deployment/spring-boot-app'
+                sh 'kubectl rollout restart deployment/node-app'
+                
                 // 새로운 버전의 애플리케이션 파드가 완벽하게 뜰 때까지 기다립니다.
                 sh 'kubectl rollout status deployment/spring-boot-app'
                 sh 'kubectl rollout status deployment/node-app'
