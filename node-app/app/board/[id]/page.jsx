@@ -10,7 +10,7 @@ export default function BoardDetail() {
   const { currentUser, isInitializing } = useAuth();
   const router = useRouter();
   const { id } = useParams();
-  const API_URL = `http://${window.location.hostname}:8080/api/boards`;
+  const API_URL = `http://${typeof window !== 'undefined' ? window.location.hostname : 'localhost'}:8080/api/boards`;
 
   useEffect(() => {
     if (id) fetchBoardDetail(id);
