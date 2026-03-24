@@ -11,13 +11,14 @@ services:
     volumes:
       - registry-data:/var/lib/registry
 
-  # 2. Jenkins Server (CI/CD 자동화 서버)
+  # 2. Jenkins Server (CI/CD 자동화 서버) - docker/kubectl 내장 커스텀 이미지
   jenkins:
-    image: jenkins/jenkins:lts
+    build:
+      context: ./jenkins
     container_name: jenkins-server
     restart: always
     privileged: true
-    user: root # (주의) Jenkins 컨테이너 내부에서 호스트의 Docker 데몬을 사용하기 위해 root 권한 부여
+    user: root
     ports:
       - "8090:8080" # Windows 브라우저에서 접속할 Jenkins Web GUI 포트
       - "50000:50000" # Jenkins 빌드 노드 통신용
