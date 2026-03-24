@@ -6,6 +6,7 @@ pipeline {
         REGISTRY = "localhost:5000"
         SPRING_IMG = "myapp-spring-boot"
         NODE_IMG = "myapp-node-app"
+        BATCH_IMG = "myapp-spring-batch"
     }
 
     stages {
@@ -20,13 +21,21 @@ pipeline {
         stage('Build Spring Boot Image') {
             steps {
                 dir('spring-boot') {
-                    // 호스트의 Docker 데몬을 통해 이미지 빌드 (DooD)
                     sh 'docker build -t ${REGISTRY}/${SPRING_IMG}:latest .'
                 }
             }
         }
 
-        // 3. Node.js (Next.js) 컨테이너 이미지 빌드
+        // 3. Spring Batch 컨테이너 이미지 빌드
+        stage('Build Spring Batch Image') {
+            steps {
+                dir('spring-batch-app') {
+                    sh 'docker build -t ${REGISTRY}/${BATCH_IMG}:latest .'
+                }
+            }
+        }
+
+        // 4. Node.js (Next.js) 컨테이너 이미지 빌드
         stage('Build Node.js Image') {
             steps {
                 dir('node-app') {
@@ -35,28 +44,27 @@ pipeline {
             }
         }
 
-        // 4. 로컬 Registry(내장 저장소)에 이미지 푸시
+        // 5. 로컬 Registry(내장 저장소)에 이미지 푸시
         stage('Push Images to Local Registry') {
             steps {
                 sh 'docker push ${REGISTRY}/${SPRING_IMG}:latest'
+                sh 'docker push ${REGISTRY}/${BATCH_IMG}:latest'
                 sh 'docker push ${REGISTRY}/${NODE_IMG}:latest'
             }
         }
 
-        // 5. 배포 명세서를 쿠버네티스 클러스터에 배포 (완벽한 CD 자동화)
+        // 6. 배포 명세서를 쿠버네티스 클러스터에 배포 (완벽한 CD 자동화)
         stage('Deploy to Kubernetes') {
             steps {
-                // k8s/ 내부의 배포 명세서(YAML)를 쿠버네티스에 적용시킵니다.
                 sh 'kubectl apply -f k8s/'
                 
-                // (중요) image 태그가 'latest'로 고정되어 있으면 쿠버네티스가 파일 변경을 눈치채지 못합니다!!
-                // 따라서 새로 구워진 이미지를 무조건 다시 가져오도록 파드를 강제로 껐다 켜게(롤아웃 재시작) 지시합니다.
                 sh 'kubectl rollout restart deployment/spring-boot-app'
                 sh 'kubectl rollout restart deployment/node-app'
+                sh 'kubectl rollout restart deployment/spring-batch-app'
                 
-                // 새로운 버전의 애플리케이션 파드가 완벽하게 뜰 때까지 기다립니다.
                 sh 'kubectl rollout status deployment/spring-boot-app'
                 sh 'kubectl rollout status deployment/node-app'
+                sh 'kubectl rollout status deployment/spring-batch-app'
             }
         }
     }
