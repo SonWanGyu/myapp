@@ -1,12 +1,9 @@
-# 1. Build stage (소스코드 컴파일)
-FROM eclipse-temurin:17-jdk-alpine AS builder
+# 1. Build stage (Gradle이 아예 내장된 공식 이미지를 사용하여 다운로드 원천 차단)
+FROM gradle:7.6.4-jdk17-alpine AS builder
 WORKDIR /app
-COPY gradlew .
-COPY gradle gradle
 COPY build.gradle settings.gradle ./
 COPY src src
-RUN chmod +x ./gradlew
-RUN ./gradlew bootJar -x test
+RUN gradle bootJar -x test --no-daemon
 
 # 2. Runtime stage (실행용 가벼운 이미지)
 FROM eclipse-temurin:17-jdk-alpine
