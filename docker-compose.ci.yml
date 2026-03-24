@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  # 1. Private Docker Registry (로컬 이미지 저장소)
+  registry:
+    image: registry:2
+    container_name: local-registry
+    restart: always
+    ports:
+      - "5000:5000"
+    volumes:
+      - registry-data:/var/lib/registry
+
+  # 2. Jenkins Server (CI/CD 자동화 서버)
+  jenkins:
+    image: jenkins/jenkins:lts
+    container_name: jenkins-server
+    restart: always
+    privileged: true
+    user: root # (주의) Jenkins 컨테이너 내부에서 호스트의 Docker 데몬을 사용하기 위해 root 권한 부여
+    ports:
+      - "8080:8080" # Windows 브라우저에서 접속할 Jenkins Web GUI 포트
+      - "50000:50000" # Jenkins 빌드 노드 통신용
+    volumes:
+      - jenkins-data:/var/jenkins_home
+      # 리눅스 호스트의 Docker 엔진을 Jenkins 컨테이너 내부에서도 쓸 수 있도록 소켓 마운트 (DooD 방식)
+      - /var/run/docker.sock:/var/run/docker.sock
+
+volumes:
+  registry-data:
+  jenkins-data:
