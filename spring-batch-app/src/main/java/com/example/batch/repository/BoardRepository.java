@@ -15,6 +15,6 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
     
     @Transactional
     @Modifying
-    @Query("DELETE FROM Board b WHERE b.createdAt < :time")
+    @Query("UPDATE Board b SET b.isDeleted = 'Y' WHERE b.createdAt < :time AND b.isDeleted = 'N'")
     int deleteByCreatedAtBefore(@Param("time") LocalDateTime time);
 }
