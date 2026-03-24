@@ -26,6 +26,21 @@ services:
       # 리눅스 호스트의 Docker 엔진을 Jenkins 컨테이너 내부에서도 쓸 수 있도록 소켓 마운트 (DooD 방식)
       - /var/run/docker.sock:/var/run/docker.sock
 
+  # 3. Oracle XE Database
+  oracle:
+    image: gvenzl/oracle-xe:21-slim
+    container_name: oracle-db
+    restart: always
+    environment:
+      - ORACLE_PASSWORD=mypassword
+      - APP_USER=myuser
+      - APP_PASSWORD=mypassword
+    ports:
+      - "1521:1521"
+    volumes:
+      - oracle-data:/opt/oracle/oradata
+
 volumes:
   registry-data:
   jenkins-data:
+  oracle-data:

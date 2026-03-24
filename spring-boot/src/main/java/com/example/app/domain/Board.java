@@ -4,10 +4,14 @@ import javax.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "BOARDS")
+@SQLDelete(sql = "UPDATE BOARDS SET is_deleted = 'Y' WHERE id = ?")
+@Where(clause = "is_deleted = 'N'")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -29,4 +33,7 @@ public class Board {
     private String authorEmail;
     
     private LocalDateTime createdAt = LocalDateTime.now();
+    
+    @Column(name = "is_deleted", nullable = false, length = 1)
+    private String isDeleted = "N";
 }
