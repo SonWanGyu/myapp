@@ -7,7 +7,7 @@ export default function WriteBoard() {
   const [formData, setFormData] = useState({ title: '', content: '' });
   const { currentUser, isInitializing, isAuthenticated } = useAuth();
   const router = useRouter();
-  const API_URL = 'http://localhost:8081/api/boards';
+  const API_URL = 'http://localhost:8080/api/boards';
 
   useEffect(() => {
     if (!isInitializing && !isAuthenticated) {

@@ -8,7 +8,7 @@ export default function AdminPage() {
   const { currentUser, isInitializing, isAuthenticated } = useAuth();
   const [users, setUsers] = useState([]);
   const router = useRouter();
-  const USER_API_URL = 'http://localhost:8081/api/users';
+  const USER_API_URL = 'http://localhost:8080/api/users';
 
   useEffect(() => {
     if (!isInitializing) {

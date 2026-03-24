@@ -19,7 +19,7 @@ services:
     privileged: true
     user: root # (주의) Jenkins 컨테이너 내부에서 호스트의 Docker 데몬을 사용하기 위해 root 권한 부여
     ports:
-      - "8080:8080" # Windows 브라우저에서 접속할 Jenkins Web GUI 포트
+      - "8090:8080" # Windows 브라우저에서 접속할 Jenkins Web GUI 포트
       - "50000:50000" # Jenkins 빌드 노드 통신용
     volumes:
       - jenkins-data:/var/jenkins_home

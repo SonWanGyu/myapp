@@ -11,7 +11,7 @@ export const AuthProvider = ({ children }) => {
   const [isInitializing, setIsInitializing] = useState(true);
   const router = useRouter();
 
-  const USER_API_URL = 'http://localhost:8081/api/users';
+  const USER_API_URL = 'http://localhost:8080/api/users';
 
   useEffect(() => {
     checkAuth();
