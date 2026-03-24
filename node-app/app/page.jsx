@@ -6,12 +6,18 @@ import { useAuth } from './context/AuthContext';
 export default function Home() {
   const [boards, setBoards] = useState([]);
   const API_URL = 'http://localhost:8080/api/boards';
-  const { isInitializing } = useAuth();
+  const { isInitializing, isAuthenticated } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
-    fetchBoards();
-  }, []);
+    if (!isInitializing) {
+      if (!isAuthenticated) {
+        router.push('/login');
+      } else {
+        fetchBoards();
+      }
+    }
+  }, [isInitializing, isAuthenticated, router]);
 
   const fetchBoards = async () => {
     try {
@@ -22,7 +28,7 @@ export default function Home() {
     }
   };
 
-  if (isInitializing) return null;
+  if (isInitializing || !isAuthenticated) return null;
 
   return (
     <div className="container animate-fade-in">
