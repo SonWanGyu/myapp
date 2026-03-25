@@ -1,0 +1,12 @@
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: spring-boot-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: spring-boot-app         # 오토스케일링 대상: Spring Boot 앱
+  minReplicas: 1                   # 평소: 최소 1개 유지
+  maxReplicas: 3                   # 폭주 시: 최대 3개까지 증가
+  targetCPUUtilizationPercentage: 50  # CPU 50% 넘으면 파드 증설!
