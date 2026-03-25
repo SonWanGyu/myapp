@@ -60,11 +60,9 @@ pipeline {
                 
                 sh 'kubectl rollout restart deployment/spring-boot-app'
                 sh 'kubectl rollout restart deployment/node-app'
-                sh 'kubectl rollout restart deployment/spring-batch-app'
                 
                 sh 'kubectl rollout status deployment/spring-boot-app'
                 sh 'kubectl rollout status deployment/node-app'
-                sh 'kubectl rollout status deployment/spring-batch-app'
             }
         }
     }

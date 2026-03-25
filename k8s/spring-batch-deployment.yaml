@@ -1,34 +1,22 @@
-apiVersion: apps/v1
-kind: Deployment
+apiVersion: batch/v1
+kind: CronJob
 metadata:
-  name: spring-batch-app
+  name: spring-batch-cronjob
 spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: spring-batch-app
-  template:
-    metadata:
-      labels:
-        app: spring-batch-app
+  schedule: "*/10 * * * *"               # 10분마다 실행
+  concurrencyPolicy: Forbid              # 이전 배치가 아직 돌고 있으면 새 배치 실행 안 함
+  successfulJobsHistoryLimit: 3          # 성공한 Job 기록 3개까지 보관
+  failedJobsHistoryLimit: 3              # 실패한 Job 기록 3개까지 보관
+  jobTemplate:
     spec:
-      containers:
-      - name: spring-batch-app
-        # host.minikube.internal:5000는 Minikube 내부에서 호스트의 5000포트(Registry)를 가리킵니다.
-        image: host.minikube.internal:5000/myapp-spring-batch:latest
-        imagePullPolicy: Always
-        ports:
-        - containerPort: 8081
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: spring-batch-service
-spec:
-  selector:
-    app: spring-batch-app
-  ports:
-    - protocol: TCP
-      port: 8081
-      targetPort: 8081
-  type: ClusterIP
+      template:
+        metadata:
+          labels:
+            app: spring-batch-app
+        spec:
+          containers:
+          - name: spring-batch-app
+            image: host.minikube.internal:5000/myapp-spring-batch:latest
+            imagePullPolicy: Always
+            args: ["--spring.batch.job.name=deleteOldBoardsJob"]
+          restartPolicy: Never             # 배치 끝나면 파드 종료 (재시작 안 함)
