@@ -1,14 +1,19 @@
 'use client';
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { useRouter } from 'next/navigation';
+import { User, AuthContextType } from '../types';
 
-const AuthContext = createContext();
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider = ({ children }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [currentUser, setCurrentUser] = useState(null);
-  const [isInitializing, setIsInitializing] = useState(true);
+interface AuthProviderProps {
+  children: ReactNode;
+}
+
+export const AuthProvider = ({ children }: AuthProviderProps) => {
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [isInitializing, setIsInitializing] = useState<boolean>(true);
   const router = useRouter();
 
   const USER_API_URL = `http://${typeof window !== 'undefined' ? window.location.hostname : 'localhost'}:8080/api/users`;
@@ -17,14 +22,14 @@ export const AuthProvider = ({ children }) => {
     checkAuth();
   }, []);
 
-  const checkAuth = async () => {
+  const checkAuth = async (): Promise<void> => {
     try {
       const res = await fetch(`${USER_API_URL}/me`, {
         method: 'GET',
         credentials: 'include'
       });
       if (res.ok) {
-        const user = await res.json();
+        const user: User = await res.json();
         setCurrentUser(user);
         setIsAuthenticated(true);
       }
@@ -35,12 +40,12 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const login = (user) => {
+  const login = (user: User): void => {
     setCurrentUser(user);
     setIsAuthenticated(true);
   };
 
-  const logout = async () => {
+  const logout = async (): Promise<void> => {
     try {
       await fetch(`${USER_API_URL}/logout`, { method: 'POST', credentials: 'include' });
     } catch (e) {
@@ -58,4 +63,10 @@ export const AuthProvider = ({ children }) => {
   );
 };
 
-export const useAuth = () => useContext(AuthContext);
+export const useAuth = (): AuthContextType => {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
+};

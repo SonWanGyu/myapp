@@ -3,10 +3,11 @@ import { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { User } from '../types';
 
 export default function AdminPage() {
   const { currentUser, isInitializing, isAuthenticated } = useAuth();
-  const [users, setUsers] = useState([]);
+  const [users, setUsers] = useState<User[]>([]);
   const router = useRouter();
   const USER_API_URL = `http://${typeof window !== 'undefined' ? window.location.hostname : 'localhost'}:8080/api/users`;
 
@@ -21,25 +22,25 @@ export default function AdminPage() {
     }
   }, [isInitializing, isAuthenticated, currentUser, router]);
 
-  const fetchUsers = async () => {
+  const fetchUsers = async (): Promise<void> => {
     try {
       const res = await fetch(USER_API_URL, { credentials: 'include' });
       if (!res.ok) throw new Error('회원 목록을 못 가져왔습니다.');
       setUsers(await res.json());
     } catch (e) {
       console.error(e);
-      alert(e.message);
+      alert((e as Error).message);
     }
   };
 
-  const handleDeleteUser = async (id, name) => {
+  const handleDeleteUser = async (id: number, name: string): Promise<void> => {
     if (!confirm(`정말 '${name}' 회원을 탈퇴시키겠습니까?`)) return;
     try {
       const res = await fetch(`${USER_API_URL}/${id}`, { method: 'DELETE', credentials: 'include' });
       if (!res.ok) throw new Error('삭제 실패');
-      setUsers(users.filter(u => u.id !== id));
+      setUsers(users.filter((u: User) => u.id !== id));
     } catch (e) {
-      alert(e.message);
+      alert((e as Error).message);
     }
   };
 
@@ -67,7 +68,7 @@ export default function AdminPage() {
             </tr>
           </thead>
           <tbody>
-            {users.map(u => (
+            {users.map((u: User) => (
               <tr key={u.id}>
                 <td>{u.id}</td>
                 <td className="fw-500">{u.name}</td>

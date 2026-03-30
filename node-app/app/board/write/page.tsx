@@ -1,10 +1,15 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '../../context/AuthContext';
 
+interface BoardFormData {
+  title: string;
+  content: string;
+}
+
 export default function WriteBoard() {
-  const [formData, setFormData] = useState({ title: '', content: '' });
+  const [formData, setFormData] = useState<BoardFormData>({ title: '', content: '' });
   const { currentUser, isInitializing, isAuthenticated } = useAuth();
   const router = useRouter();
   const API_URL = `http://${typeof window !== 'undefined' ? window.location.hostname : 'localhost'}:8080/api/boards`;
@@ -16,7 +21,7 @@ export default function WriteBoard() {
     }
   }, [isInitializing, isAuthenticated, router]);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault();
     if (!currentUser) return;
     try {
@@ -37,7 +42,7 @@ export default function WriteBoard() {
         throw new Error('작성 실패');
       }
     } catch (e) {
-      alert(e.message);
+      alert((e as Error).message);
     }
   };
 

@@ -1,13 +1,13 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, FormEvent } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useRouter } from 'next/navigation';
 
 export default function LoginPage() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [name, setName] = useState('');
-  const [isLoginMode, setIsLoginMode] = useState(true);
+  const [email, setEmail] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
+  const [name, setName] = useState<string>('');
+  const [isLoginMode, setIsLoginMode] = useState<boolean>(true);
   const { login, isAuthenticated, isInitializing } = useAuth();
   const router = useRouter();
 
@@ -19,7 +19,7 @@ export default function LoginPage() {
     }
   }, [isAuthenticated, isInitializing, router]);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault();
     if (isLoginMode) {
       try {
@@ -38,7 +38,7 @@ export default function LoginPage() {
            router.push('/');
         }
       } catch (err) {
-        alert(err.message);
+        alert((err as Error).message);
       }
     } else {
       try {
@@ -51,7 +51,7 @@ export default function LoginPage() {
         alert('회원가입이 완료되었습니다. 로그인해주세요.');
         setIsLoginMode(true);
       } catch (err) {
-        alert(err.message);
+        alert((err as Error).message);
       }
     }
   };

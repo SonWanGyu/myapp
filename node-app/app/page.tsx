@@ -2,9 +2,10 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from './context/AuthContext';
+import { Board } from './types';
 
 export default function Home() {
-  const [boards, setBoards] = useState([]);
+  const [boards, setBoards] = useState<Board[]>([]);
   const API_URL = `http://${typeof window !== 'undefined' ? window.location.hostname : 'localhost'}:8080/api/boards`;
   const { isInitializing, isAuthenticated } = useAuth();
   const router = useRouter();
@@ -19,7 +20,7 @@ export default function Home() {
     }
   }, [isInitializing, isAuthenticated, router]);
 
-  const fetchBoards = async () => {
+  const fetchBoards = async (): Promise<void> => {
     try {
       const res = await fetch(API_URL, { credentials: 'include' });
       if (res.ok) setBoards(await res.json());
@@ -45,10 +46,10 @@ export default function Home() {
           <tbody>
             {boards.length === 0 ? (
               <tr>
-                <td colSpan="4" className="text-center text-muted p-3">등록된 게시글이 없습니다.</td>
+                <td colSpan={4} className="text-center text-muted p-3">등록된 게시글이 없습니다.</td>
               </tr>
             ) : (
-              boards.map(board => (
+              boards.map((board: Board) => (
                 <tr key={board.id} className="clickable" onClick={() => router.push(`/board/${board.id}`)}>
                   <td>{board.id}</td>
                   <td className="fw-500">{board.title}</td>

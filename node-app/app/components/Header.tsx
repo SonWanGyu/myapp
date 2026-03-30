@@ -3,7 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
-export default function Header() {
+export default function Header(): React.ReactElement | null {
   const { isAuthenticated, currentUser, logout, isInitializing } = useAuth();
   const pathname = usePathname();
 
@@ -19,10 +19,10 @@ export default function Header() {
         {isAuthenticated ? (
           <>
             <span className="user-greeting">
-              👋 {currentUser.name}님
-              {currentUser.role === 'ADMIN' && <span className="admin-badge">ADMIN</span>}
+              👋 {currentUser?.name}님
+              {currentUser?.role === 'ADMIN' && <span className="admin-badge">ADMIN</span>}
             </span>
-            {currentUser.role === 'ADMIN' && pathname !== '/admin' && (
+            {currentUser?.role === 'ADMIN' && pathname !== '/admin' && (
               <Link href="/admin">
                 <button className="secondary">회원 관리</button>
               </Link>
