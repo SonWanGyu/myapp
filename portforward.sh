@@ -1,8 +1,11 @@
 #!/bin/bash
 echo "🔌 포트 포워딩 시작..."
 
-# 기존 포트 포워딩 프로세스가 있으면 정리
-pkill -f "kubectl port-forward" 2>/dev/null
+# 백그라운드 명령어(&)에서 sudo 비밀번호 입력 대기 상태로 멈추는 것을 방지
+sudo -v
+
+# 기존 포트 포워딩 프로세스가 있으면 관리자 권한으로 정리 (미리 입력한 비밀번호 덕에 바로 실행됨)
+sudo pkill -f "kubectl port-forward" 2>/dev/null
 
 # 백그라운드로 포트 포워딩 실행
 # 80포트(HTTP 기본)로 연결 → URL에 포트 번호 없이 접속 가능!
