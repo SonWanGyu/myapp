@@ -14,6 +14,7 @@ export interface User {
   name: string;
   email: string;
   role: 'USER' | 'ADMIN';
+  passwordPromptStatus?: 'DEFAULT' | 'REQUIRED';
 }
 
 // 인증 Context 타입
