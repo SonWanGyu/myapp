@@ -16,23 +16,27 @@ export default function Header(): React.ReactElement | null {
       </Link>
       
       <div className="nav-actions">
+        <div className="dropdown">
+          <button className="dropdown-btn">여행 메뉴 ▼</button>
+          <div className="dropdown-content">
+            <Link href="/coming-soon">AI 추천 맞춤일정</Link>
+            <Link href="/coming-soon">내 일정</Link>
+          </div>
+        </div>
+
         {isAuthenticated ? (
           <>
             <span className="user-greeting">
               👋 {currentUser?.name}님 환영합니다
             </span>
-            <button className="secondary">AI 추천 맞춤일정</button>
             <button onClick={logout} className="secondary">로그아웃</button>
           </>
         ) : (
-          <>
-            <button className="secondary">AI 추천 맞춤일정</button>
-            {pathname !== '/login' && Object.keys(currentUser || {}).length === 0 && (
-              <Link href="/login">
-                <button className="primary">로그인/회원가입</button>
-              </Link>
-            )}
-          </>
+          pathname !== '/login' && Object.keys(currentUser || {}).length === 0 && (
+            <Link href="/login">
+              <button className="primary">로그인 / 회원가입</button>
+            </Link>
+          )
         )}
       </div>
     </header>

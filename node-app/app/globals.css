@@ -115,3 +115,46 @@ textarea { resize: vertical; min-height: 200px; }
 .travel-login-container input { padding: 1rem; border-radius: 12px; border: 1px solid #cbd5e1; background: #fff; margin-bottom: 0.5rem; }
 .travel-login-container button.primary { padding: 1rem; border-radius: 12px; margin-top: 1.5rem; }
 
+/* Dropdown Menu Styles */
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+.dropdown-content {
+  display: none;
+  position: absolute;
+  right: 0;
+  background-color: var(--card-bg);
+  min-width: 160px;
+  box-shadow: var(--shadow-lg);
+  border-radius: var(--radius);
+  z-index: 100;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  margin-top: 0.5rem;
+}
+.dropdown-content a {
+  color: var(--text);
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+  transition: background-color 0.2s;
+  font-weight: 500;
+}
+.dropdown-content a:hover {
+  background-color: #f1f5f9;
+}
+.dropdown:hover .dropdown-content {
+  display: block;
+  animation: fadeIn 0.2s ease-out;
+}
+.dropdown-btn {
+  background-color: transparent;
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+  font-weight: bold;
+}
+.dropdown-btn:hover {
+  background-color: #f1f5f9;
+  color: var(--text);
+}
