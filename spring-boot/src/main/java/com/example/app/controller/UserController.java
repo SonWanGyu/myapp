@@ -12,6 +12,8 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
+import java.util.Map;
+import java.time.LocalDateTime;
 
 @RestController
 @RequestMapping("/api/users")
@@ -48,6 +50,8 @@ public class UserController {
         } else {
             user.setRole("USER");
         }
+        user.setCreatedAt(LocalDateTime.now());
+        user.setPasswordPromptStatus("DEFAULT");
         return userRepository.save(user);
     }
     
@@ -120,5 +124,54 @@ public class UserController {
             return ResponseEntity.ok().build();
         }
         return ResponseEntity.notFound().build();
+    }
+
+    @PostMapping("/password-prompt/dismiss")
+    public ResponseEntity<?> dismissPasswordPrompt(HttpServletRequest request) {
+        String jwt = null;
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie c : cookies) {
+                if ("jwt".equals(c.getName())) jwt = c.getValue();
+            }
+        }
+        if (jwt != null && jwtUtil.validateToken(jwt)) {
+            String email = jwtUtil.extractEmail(jwt);
+            return userRepository.findByEmail(email)
+                .map(user -> {
+                    user.setPasswordPromptStatus("DEFAULT");
+                    user.setCreatedAt(LocalDateTime.now()); // 다음에 변경하기를 누르면 현재 시간으로 리셋하여 1일 뒤 다시 알림
+                    userRepository.save(user);
+                    return ResponseEntity.ok().build();
+                }).orElse(ResponseEntity.status(401).build());
+        }
+        return ResponseEntity.status(401).build();
+    }
+
+    @PostMapping("/password")
+    public ResponseEntity<?> changePassword(HttpServletRequest request, @RequestBody Map<String, String> payload) {
+        String jwt = null;
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie c : cookies) {
+                if ("jwt".equals(c.getName())) jwt = c.getValue();
+            }
+        }
+        if (jwt != null && jwtUtil.validateToken(jwt)) {
+            String email = jwtUtil.extractEmail(jwt);
+            String newPassword = payload.get("newPassword");
+            if (newPassword == null || newPassword.trim().isEmpty()) {
+                return ResponseEntity.badRequest().body("새 비밀번호를 입력해주세요.");
+            }
+            return userRepository.findByEmail(email)
+                .map(user -> {
+                    user.setPassword(passwordEncoder.encode(newPassword));
+                    user.setPasswordPromptStatus("DEFAULT");
+                    user.setCreatedAt(LocalDateTime.now()); // 비밀번호 변경 시 다시 1일 뒤 검사하도록 리셋
+                    userRepository.save(user);
+                    return ResponseEntity.ok().build();
+                }).orElse(ResponseEntity.status(401).build());
+        }
+        return ResponseEntity.status(401).build();
     }
 }

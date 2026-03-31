@@ -1,6 +1,6 @@
 package com.example.batch.job;
 
-import com.example.batch.repository.BoardRepository;
+import com.example.batch.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
@@ -21,40 +21,39 @@ import java.time.LocalDateTime;
 @Slf4j
 @Configuration
 @RequiredArgsConstructor
-public class BoardDeleteJobConfig implements CommandLineRunner {
+public class PasswordReminderJobConfig implements CommandLineRunner {
 
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
-    private final BoardRepository boardRepository;
+    private final UserRepository userRepository;
     private final JobLauncher jobLauncher;
 
-    // 앱이 시작되면 배치를 1회 실행하고 종료 (스케줄링은 K8s CronJob이 담당)
     @Override
     public void run(String... args) throws Exception {
         JobParameters params = new JobParametersBuilder()
                 .addString("JobID", String.valueOf(System.currentTimeMillis()))
                 .toJobParameters();
-        jobLauncher.run(deleteOldBoardsJob(), params);
+        jobLauncher.run(passwordReminderJob(), params);
     }
 
     @Bean
-    public Job deleteOldBoardsJob() {
-        return jobBuilderFactory.get("deleteOldBoardsJob")
+    public Job passwordReminderJob() {
+        return jobBuilderFactory.get("passwordReminderJob")
                 .incrementer(new RunIdIncrementer())
-                .start(deleteOldBoardsStep())
+                .start(passwordReminderStep())
                 .build();
     }
 
     @Bean
-    public Step deleteOldBoardsStep() {
-        return stepBuilderFactory.get("deleteOldBoardsStep")
+    public Step passwordReminderStep() {
+        return stepBuilderFactory.get("passwordReminderStep")
                 .tasklet((contribution, chunkContext) -> {
-                    // Calculate exactly 24 hours ago
-                    LocalDateTime targetTime = LocalDateTime.now().minusHours(24);
+                    // 원래 1일 경과이지만 테스트 편의성을 위해 1분으로 설정하거나 1일로 설정 후 강제 데이터 조작
+                    LocalDateTime targetTime = LocalDateTime.now().minusDays(1);
                     
                     log.info("Batch execution started. Target cutoff time: {}", targetTime);
-                    int deletedCount = boardRepository.deleteByCreatedAtBefore(targetTime);
-                    log.info("Batch execution complete! Successfully deleted {} posts older than 24 hours.", deletedCount);
+                    int updatedCount = userRepository.updatePasswordPromptRequired(targetTime);
+                    log.info("Batch execution complete! Successfully updated {} users older than 24 hours.", updatedCount);
                     
                     return RepeatStatus.FINISHED;
                 })

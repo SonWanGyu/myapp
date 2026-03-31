@@ -1,4 +1,4 @@
-package com.example.app.domain;
+package com.example.batch.entity;
 
 import javax.persistence.*;
 import lombok.Getter;
@@ -28,18 +28,10 @@ public class User {
     
     @Column(nullable = false)
     private String role;
-    
+
     @Column(nullable = false)
     private LocalDateTime createdAt;
     
-    // "DEFAULT", "REQUIRED"
     @Column(nullable = false)
     private String passwordPromptStatus = "DEFAULT";
-    
-    @PrePersist
-    protected void onCreate() {
-        if (createdAt == null) {
-            createdAt = LocalDateTime.now();
-        }
-    }
 }

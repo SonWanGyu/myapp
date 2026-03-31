@@ -1,66 +1,40 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from './context/AuthContext';
-import { Board } from './types';
 
 export default function Home() {
-  const [boards, setBoards] = useState<Board[]>([]);
-  const API_URL = `http://${typeof window !== 'undefined' ? window.location.hostname : 'localhost'}:8080/api/boards`;
-  const { isInitializing, isAuthenticated } = useAuth();
+  const { isInitializing, isAuthenticated, currentUser } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
-    if (!isInitializing) {
-      if (!isAuthenticated) {
-        window.location.href = '/login';
-      } else {
-        fetchBoards();
-      }
+    if (!isInitializing && isAuthenticated && currentUser?.passwordPromptStatus === 'REQUIRED') {
+      router.push('/change-password');
     }
-  }, [isInitializing, isAuthenticated, router]);
+  }, [isInitializing, isAuthenticated, currentUser, router]);
 
-  const fetchBoards = async (): Promise<void> => {
-    try {
-      const res = await fetch(API_URL, { credentials: 'include' });
-      if (res.ok) setBoards(await res.json());
-    } catch (e) {
-      console.error(e);
-    }
-  };
-
-  if (isInitializing || !isAuthenticated) return null;
+  if (isInitializing) return null;
 
   return (
-    <div className="container animate-fade-in">
-      <div className="card-no-padding">
-        <table className="table">
-          <thead>
-            <tr>
-              <th>번호</th>
-              <th>제목</th>
-              <th>작성자</th>
-              <th>작성일</th>
-            </tr>
-          </thead>
-          <tbody>
-            {boards.length === 0 ? (
-              <tr>
-                <td colSpan={4} className="text-center text-muted p-3">등록된 게시글이 없습니다.</td>
-              </tr>
-            ) : (
-              boards.map((board: Board) => (
-                <tr key={board.id} className="clickable" onClick={() => router.push(`/board/${board.id}`)}>
-                  <td>{board.id}</td>
-                  <td className="fw-500">{board.title}</td>
-                  <td className="text-muted">{board.author}</td>
-                  <td className="text-muted">{new Date(board.createdAt).toLocaleDateString()}</td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-      </div>
+    <div className="home-container">
+      {/* Section 2: 간단한 소개 화면 (Hero) */}
+      <section className="hero-section" style={{ backgroundImage: "url('/aurora.png')" }}>
+        <div className="hero-overlay"></div>
+        <div className="hero-content animate-fade-in">
+          <h2>AI와 함께 일정을 만드는 TravelVibe</h2>
+          <p>꿈꾸던 여행을 현실로 만들어보세요</p>
+        </div>
+      </section>
+
+      {/* Section 3: AI 추천 맞춤일정에 대한 소개 화면 */}
+      <section className="ai-section" style={{ backgroundImage: "url('/ai_vibe.png')" }}>
+        <div className="ai-overlay"></div>
+        <div className="ai-content">
+          <h2>취향에 맞게 일정을 추천해 드립니다</h2>
+          <p>복잡한 계획은 AI에게 맞기고, 여행의 즐거움만 누리세요.</p>
+          <button className="primary ai-btn" onClick={() => alert('신규 기능 준비 중입니다!')}>바로 추천받기</button>
+        </div>
+      </section>
     </div>
   );
 }

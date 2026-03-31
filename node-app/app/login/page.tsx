@@ -59,24 +59,29 @@ export default function LoginPage() {
   if (isInitializing || isAuthenticated) return null;
 
   return (
-    <div className="login-container animate-fade-in">
-      <h2 className="page-title center">
-        {isLoginMode ? '🔑 로그인' : '📝 회원가입'}
-      </h2>
-      <form onSubmit={handleSubmit} className="form-group">
-        <input type="email" placeholder="이메일" value={email} onChange={e => setEmail(e.target.value)} required />
-        {!isLoginMode && (
-          <input type="text" placeholder="이름 (표시용)" value={name} onChange={e => setName(e.target.value)} required />
-        )}
-        <input type="password" placeholder="비밀번호" value={password} onChange={e => setPassword(e.target.value)} required />
-        <button type="submit" className="primary mt-3">
-          {isLoginMode ? '로그인' : '가입하기'}
-        </button>
-      </form>
-      <div className="text-center mt-3">
-        <button className="text-link" onClick={() => setIsLoginMode(!isLoginMode)}>
-          {isLoginMode ? '계정이 없으신가요? 회원가입' : '이미 계정이 있으신가요? 로그인'}
-        </button>
+    <div style={{ minHeight: '100vh', backgroundImage: "url('/aurora.png')", backgroundSize: 'cover', backgroundPosition: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div className="travel-login-container animate-fade-in">
+        <h2 className="page-title center">
+          {isLoginMode ? '✈️ 로그인' : '✈️ 회원가입'}
+        </h2>
+        <p style={{ color: '#64748b', marginBottom: '2rem' }}>
+          {isLoginMode ? 'TravelVibe에 다시 오신 것을 환영합니다.' : 'TravelVibe와 함께 여정을 시작하세요.'}
+        </p>
+        <form onSubmit={handleSubmit} className="form-group">
+          <input type="email" placeholder="이메일" value={email} onChange={e => setEmail(e.target.value)} required />
+          {!isLoginMode && (
+            <input type="text" placeholder="이름 (표시용)" value={name} onChange={e => setName(e.target.value)} required />
+          )}
+          <input type="password" placeholder="비밀번호" value={password} onChange={e => setPassword(e.target.value)} required />
+          <button type="submit" className="primary mt-3 w-100">
+            {isLoginMode ? '로그인' : '가입하기'}
+          </button>
+        </form>
+        <div className="text-center mt-3">
+          <button className="text-link" onClick={() => setIsLoginMode(!isLoginMode)}>
+            {isLoginMode ? '계정이 없으신가요? 회원가입' : '이미 계정이 있으신가요? 로그인'}
+          </button>
+        </div>
       </div>
     </div>
   );

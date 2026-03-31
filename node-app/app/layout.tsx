@@ -4,8 +4,8 @@ import Header from './components/Header';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: '리액트 자유게시판',
-  description: 'Next.js 자유게시판 설계',
+  title: 'TravelVibe',
+  description: 'AI와 함께 일정을 만드는 TravelVibe',
 };
 
 interface RootLayoutProps {

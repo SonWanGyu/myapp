@@ -12,33 +12,28 @@ export default function Header(): React.ReactElement | null {
   return (
     <header className="app-header">
       <Link href="/" className="no-underline">
-        <h1 className="app-title">🚀 Next.js 자유게시판</h1>
+        <h1 className="app-title">✈️ TravelVibe</h1>
       </Link>
       
       <div className="nav-actions">
         {isAuthenticated ? (
           <>
             <span className="user-greeting">
-              👋 {currentUser?.name}님
-              {currentUser?.role === 'ADMIN' && <span className="admin-badge">ADMIN</span>}
+              👋 {currentUser?.name}님 환영합니다
             </span>
-            {currentUser?.role === 'ADMIN' && pathname !== '/admin' && (
-              <Link href="/admin">
-                <button className="secondary">회원 관리</button>
-              </Link>
-            )}
+            <button className="secondary">AI 추천 맞춤일정</button>
             <button onClick={logout} className="secondary">로그아웃</button>
-            {pathname === '/' && (
-              <Link href="/board/write">
-                <button className="primary">✨ 새 글 작성</button>
+          </>
+        ) : (
+          <>
+            <button className="secondary">AI 추천 맞춤일정</button>
+            {pathname !== '/login' && Object.keys(currentUser || {}).length === 0 && (
+              <Link href="/login">
+                <button className="primary">로그인/회원가입</button>
               </Link>
             )}
           </>
-        ) : pathname !== '/login' ? (
-          <Link href="/login">
-            <button className="primary">로그인</button>
-          </Link>
-        ) : null}
+        )}
       </div>
     </header>
   );
