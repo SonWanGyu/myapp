@@ -16,19 +16,16 @@ export default function Header(): React.ReactElement | null {
       </Link>
       
       <div className="nav-actions">
-        <div className="dropdown">
-          <button className="dropdown-btn" style={{ fontSize: '1.5rem', padding: '0.2rem 0.5rem', border: 'none' }}>☰</button>
-          <div className="dropdown-content">
-            <Link href="/coming-soon">AI 추천 맞춤일정</Link>
-            <Link href={isAuthenticated ? "/coming-soon" : "/login"}>내 일정</Link>
-          </div>
-        </div>
-
         {isAuthenticated ? (
           <>
             <span className="user-greeting">
               👋 {currentUser?.name}님 환영합니다
             </span>
+            {currentUser?.role === 'ADMIN' && (
+              <Link href="/admin">
+                <button className="secondary">회원관리</button>
+              </Link>
+            )}
             <button onClick={logout} className="secondary">로그아웃</button>
           </>
         ) : (
@@ -38,6 +35,14 @@ export default function Header(): React.ReactElement | null {
             </Link>
           )
         )}
+
+        <div className="dropdown">
+          <button className="dropdown-btn" style={{ fontSize: '1.5rem', padding: '0.2rem 0.5rem', border: 'none' }}>☰</button>
+          <div className="dropdown-content">
+            <Link href="/coming-soon">AI 추천 맞춤일정</Link>
+            <Link href={isAuthenticated ? "/coming-soon" : "/login"}>내 일정</Link>
+          </div>
+        </div>
       </div>
     </header>
   );
