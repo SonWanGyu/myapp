@@ -4,11 +4,16 @@ import { useRouter } from 'next/navigation';
 
 export default function ChangePasswordPage() {
   const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
   const handlePasswordChange = async (e: FormEvent) => {
     e.preventDefault();
+    if (newPassword !== confirmPassword) {
+      alert('비밀번호가 일치하지 않습니다.');
+      return;
+    }
     setIsLoading(true);
     try {
       const res = await fetch(`http://${typeof window !== 'undefined' ? window.location.hostname : 'localhost'}:8080/api/users/password`, {
@@ -56,6 +61,14 @@ export default function ChangePasswordPage() {
             placeholder="새로운 비밀번호" 
             value={newPassword} 
             onChange={e => setNewPassword(e.target.value)} 
+            required 
+            minLength={4}
+          />
+          <input 
+            type="password" 
+            placeholder="새로운 비밀번호 확인" 
+            value={confirmPassword} 
+            onChange={e => setConfirmPassword(e.target.value)} 
             required 
             minLength={4}
           />

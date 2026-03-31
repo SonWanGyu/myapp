@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 export default function LoginPage() {
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
+  const [passwordConfirm, setPasswordConfirm] = useState<string>('');
   const [name, setName] = useState<string>('');
   const [isLoginMode, setIsLoginMode] = useState<boolean>(true);
   const { login, isAuthenticated, isInitializing } = useAuth();
@@ -41,6 +42,10 @@ export default function LoginPage() {
         alert((err as Error).message);
       }
     } else {
+      if (password !== passwordConfirm) {
+        alert('비밀번호가 일치하지 않습니다.');
+        return;
+      }
       try {
         const res = await fetch(USER_API_URL, {
           method: 'POST',
@@ -73,6 +78,9 @@ export default function LoginPage() {
             <input type="text" placeholder="이름 (표시용)" value={name} onChange={e => setName(e.target.value)} required />
           )}
           <input type="password" placeholder="비밀번호" value={password} onChange={e => setPassword(e.target.value)} required />
+          {!isLoginMode && (
+            <input type="password" placeholder="비밀번호 확인" value={passwordConfirm} onChange={e => setPasswordConfirm(e.target.value)} required />
+          )}
           <button type="submit" className="primary mt-3 w-100">
             {isLoginMode ? '로그인' : '가입하기'}
           </button>

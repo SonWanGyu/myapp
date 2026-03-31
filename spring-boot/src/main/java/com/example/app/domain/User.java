@@ -32,6 +32,10 @@ public class User {
     @Column(nullable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime createdAt;
     
+    // 비밀번호 최종 변경 혹은 다음에 변경하기를 누른 시점 
+    @Column(nullable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+    private LocalDateTime passwordUpdatedAt;
+    
     // "DEFAULT", "REQUIRED"
     @Column(nullable = false, columnDefinition = "VARCHAR2(255) DEFAULT 'DEFAULT'")
     private String passwordPromptStatus = "DEFAULT";
@@ -40,6 +44,9 @@ public class User {
     protected void onCreate() {
         if (createdAt == null) {
             createdAt = LocalDateTime.now();
+        }
+        if (passwordUpdatedAt == null) {
+            passwordUpdatedAt = LocalDateTime.now();
         }
     }
 }

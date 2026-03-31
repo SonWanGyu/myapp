@@ -51,6 +51,7 @@ public class UserController {
             user.setRole("USER");
         }
         user.setCreatedAt(LocalDateTime.now());
+        user.setPasswordUpdatedAt(LocalDateTime.now());
         user.setPasswordPromptStatus("DEFAULT");
         return userRepository.save(user);
     }
@@ -140,7 +141,7 @@ public class UserController {
             return userRepository.findByEmail(email)
                 .map(user -> {
                     user.setPasswordPromptStatus("DEFAULT");
-                    user.setCreatedAt(LocalDateTime.now()); // 다음에 변경하기를 누르면 현재 시간으로 리셋하여 1일 뒤 다시 알림
+                    user.setPasswordUpdatedAt(LocalDateTime.now()); // 다음에 변경하기 시 기준시점을 현재로 리셋
                     userRepository.save(user);
                     return ResponseEntity.ok().build();
                 }).orElse(ResponseEntity.status(401).build());
@@ -167,7 +168,7 @@ public class UserController {
                 .map(user -> {
                     user.setPassword(passwordEncoder.encode(newPassword));
                     user.setPasswordPromptStatus("DEFAULT");
-                    user.setCreatedAt(LocalDateTime.now()); // 비밀번호 변경 시 다시 1일 뒤 검사하도록 리셋
+                    user.setPasswordUpdatedAt(LocalDateTime.now()); // 비밀번호 변경 완료 시 기준시점을 현재로 리셋
                     userRepository.save(user);
                     return ResponseEntity.ok().build();
                 }).orElse(ResponseEntity.status(401).build());

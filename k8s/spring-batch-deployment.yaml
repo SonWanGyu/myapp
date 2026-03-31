@@ -3,7 +3,7 @@ kind: CronJob
 metadata:
   name: spring-batch-cronjob
 spec:
-  schedule: "*/10 * * * *"               # 10분마다 실행
+  schedule: "*/1 * * * *"               # 1분마다 실행
   concurrencyPolicy: Forbid              # 이전 배치가 아직 돌고 있으면 새 배치 실행 안 함
   successfulJobsHistoryLimit: 3          # 성공한 Job 기록 3개까지 보관
   failedJobsHistoryLimit: 3              # 실패한 Job 기록 3개까지 보관
@@ -18,5 +18,5 @@ spec:
           - name: spring-batch-app
             image: host.minikube.internal:5000/myapp-spring-batch:latest
             imagePullPolicy: Always
-            args: ["--spring.batch.job.name=deleteOldBoardsJob"]
+            args: ["--spring.batch.job.name=passwordReminderJob"]
           restartPolicy: Never             # 배치 끝나면 파드 종료 (재시작 안 함)

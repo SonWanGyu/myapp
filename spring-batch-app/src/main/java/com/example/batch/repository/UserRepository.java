@@ -12,6 +12,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     @Modifying
     @Transactional
-    @Query("UPDATE User u SET u.passwordPromptStatus = 'REQUIRED' WHERE u.createdAt <= :targetTime AND u.passwordPromptStatus = 'DEFAULT'")
+    @Query("UPDATE User u SET u.passwordPromptStatus = 'REQUIRED' WHERE u.passwordUpdatedAt <= :targetTime AND u.passwordPromptStatus = 'DEFAULT' AND u.role != 'ADMIN'")
     int updatePasswordPromptRequired(LocalDateTime targetTime);
 }
