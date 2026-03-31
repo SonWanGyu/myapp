@@ -17,10 +17,10 @@ export default function Header(): React.ReactElement | null {
       
       <div className="nav-actions">
         <div className="dropdown">
-          <button className="dropdown-btn">여행 메뉴 ▼</button>
+          <button className="dropdown-btn" style={{ fontSize: '1.5rem', padding: '0.2rem 0.5rem', border: 'none' }}>☰</button>
           <div className="dropdown-content">
             <Link href="/coming-soon">AI 추천 맞춤일정</Link>
-            <Link href="/coming-soon">내 일정</Link>
+            <Link href={isAuthenticated ? "/coming-soon" : "/login"}>내 일정</Link>
           </div>
         </div>
 

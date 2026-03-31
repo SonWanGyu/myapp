@@ -124,6 +124,7 @@ textarea { resize: vertical; min-height: 200px; }
   display: none;
   position: absolute;
   right: 0;
+  top: 100%;
   background-color: var(--card-bg);
   min-width: 160px;
   box-shadow: var(--shadow-lg);
@@ -131,7 +132,7 @@ textarea { resize: vertical; min-height: 200px; }
   z-index: 100;
   overflow: hidden;
   border: 1px solid var(--border);
-  margin-top: 0.5rem;
+  margin-top: 0; 
 }
 .dropdown-content a {
   color: var(--text);
