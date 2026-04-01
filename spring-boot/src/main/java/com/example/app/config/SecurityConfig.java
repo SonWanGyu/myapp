@@ -34,9 +34,14 @@ public class SecurityConfig {
             .authorizeRequests()
             .antMatchers(org.springframework.http.HttpMethod.POST, "/api/users").permitAll() 
             .antMatchers(org.springframework.http.HttpMethod.POST, "/api/users/login").permitAll()
+            .antMatchers(org.springframework.http.HttpMethod.GET, "/api/users/me").authenticated()
+            .antMatchers(org.springframework.http.HttpMethod.PUT, "/api/users/me").authenticated()
+            .antMatchers(org.springframework.http.HttpMethod.PUT, "/api/users/me/password").authenticated()
             .antMatchers(org.springframework.http.HttpMethod.GET, "/api/users").hasAuthority("ADMIN")
             .antMatchers(org.springframework.http.HttpMethod.DELETE, "/api/users/**").hasAuthority("ADMIN")
-            .antMatchers(org.springframework.http.HttpMethod.PUT, "/api/users/**").hasAuthority("ADMIN")
+            .antMatchers(org.springframework.http.HttpMethod.PUT, "/api/users/*/restore").hasAuthority("ADMIN")
+            .antMatchers("/api/planner/**").permitAll()
+            .antMatchers("/api/itineraries/**").authenticated()
             .anyRequest().authenticated();
             
         http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
