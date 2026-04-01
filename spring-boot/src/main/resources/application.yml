@@ -1,6 +1,4 @@
 spring:
-  config:
-    import: optional:classpath:application-secret.yml
   datasource:
     url: jdbc:oracle:thin:@host.minikube.internal:1521/XEPDB1
     driver-class-name: oracle.jdbc.OracleDriver
@@ -13,3 +11,7 @@ spring:
     properties:
       hibernate:
         format_sql: true
+
+gemini:
+  api:
+    key: ${GEMINI_API_KEY:none}
