@@ -35,13 +35,12 @@ function extractSearchName(name: string): string {
 }
 
 function getMapSrc(p: Place, fallback: string) {
-  // 좌표가 있으면 좌표 기반 (가장 정확)
-  if (p.lat && p.lng) {
-    return `https://maps.google.com/maps?q=${p.lat},${p.lng}&z=15&ie=UTF8&iwloc=&output=embed`;
-  }
-  // 좌표가 없으면 영어 이름으로 검색 (더 정확)
   const searchName = extractSearchName(p.name || fallback);
-  return `https://maps.google.com/maps?q=${encodeURIComponent(searchName)}&z=15&ie=UTF8&iwloc=&output=embed`;
+  // 좌표가 있으면 좌표 + 이름(괄호) 조합으로 더 정확하게 핀을 찍음
+  if (p.lat && p.lng) {
+    return `https://maps.google.com/maps?q=${p.lat},${p.lng}+(${encodeURIComponent(searchName)})&z=16&ie=UTF8&iwloc=B&output=embed`;
+  }
+  return `https://maps.google.com/maps?q=${encodeURIComponent(searchName)}&z=16&ie=UTF8&iwloc=B&output=embed`;
 }
 
 export default function ItineraryDetailPage() {
@@ -57,12 +56,11 @@ export default function ItineraryDetailPage() {
   const [selectedPlace, setSelectedPlace] = useState('');
 
   useEffect(() => {
-    if (!isInitializing) {
-      if (!isAuthenticated) {
-        showAlert('로그인이 필요합니다.');
-        router.push('/login');
-        return;
-      }
+    // 초기 로딩 완료 후에만 인증 체크 (로그아웃 시 이미 false인 상태에서 알림이 뜨는 것을 방지)
+    if (!isInitializing && !isAuthenticated) {
+      router.push('/login');
+    }
+    if (!isInitializing && isAuthenticated) {
       fetchItinerary();
     }
   }, [isInitializing, isAuthenticated]);

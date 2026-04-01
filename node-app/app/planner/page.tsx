@@ -44,9 +44,12 @@ function extractSearchName(name: string): string {
 }
 
 function getMapSrc(p: Place, fallback: string) {
-  if (p.lat && p.lng) return `https://maps.google.com/maps?q=${p.lat},${p.lng}&z=15&ie=UTF8&iwloc=&output=embed`;
   const searchName = extractSearchName(p.name || fallback);
-  return `https://maps.google.com/maps?q=${encodeURIComponent(searchName)}&z=15&ie=UTF8&iwloc=&output=embed`;
+  // 좌표가 있으면 좌표 + 이름(괄호) 조합으로 더 정확하게 핀을 찍음
+  if (p.lat && p.lng) {
+    return `https://maps.google.com/maps?q=${p.lat},${p.lng}+(${encodeURIComponent(searchName)})&z=16&ie=UTF8&iwloc=B&output=embed`;
+  }
+  return `https://maps.google.com/maps?q=${encodeURIComponent(searchName)}&z=16&ie=UTF8&iwloc=B&output=embed`;
 }
 
 export default function PlannerPage() {
