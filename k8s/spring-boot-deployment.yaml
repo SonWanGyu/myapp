@@ -27,11 +27,11 @@ spec:
               optional: true
         resources:
           requests:
-            cpu: "200m"       # 최소 CPU 0.2코어 요청
-            memory: "256Mi"
+            cpu: "200m"
+            memory: "384Mi"
           limits:
-            cpu: "500m"       # 최대 CPU 0.5코어 제한
-            memory: "512Mi"
+            cpu: "1000m"
+            memory: "1024Mi"
 ---
 apiVersion: v1
 kind: Service
