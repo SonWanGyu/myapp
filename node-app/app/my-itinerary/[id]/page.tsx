@@ -26,9 +26,22 @@ function calcDistance(lat1?: number, lng1?: number, lat2?: number, lng2?: number
   return d < 1 ? `${Math.round(d * 1000)}m` : `${d.toFixed(1)}km`;
 }
 
+// 장소명에서 영어명(괄호 안)을 추출하여 더 정확한 검색 수행
+function extractSearchName(name: string): string {
+  // "한글명 (English Name)" 패턴에서 영어명 추출
+  const match = name.match(/\(([^)]+)\)/);
+  if (match) return match[1].trim();
+  return name;
+}
+
 function getMapSrc(p: Place, fallback: string) {
-  if (p.lat && p.lng) return `https://maps.google.com/maps?q=${p.lat},${p.lng}&z=15&ie=UTF8&iwloc=&output=embed`;
-  return `https://maps.google.com/maps?q=${encodeURIComponent(p.name || fallback)}&z=15&ie=UTF8&iwloc=&output=embed`;
+  // 좌표가 있으면 좌표 기반 (가장 정확)
+  if (p.lat && p.lng) {
+    return `https://maps.google.com/maps?q=${p.lat},${p.lng}&z=15&ie=UTF8&iwloc=&output=embed`;
+  }
+  // 좌표가 없으면 영어 이름으로 검색 (더 정확)
+  const searchName = extractSearchName(p.name || fallback);
+  return `https://maps.google.com/maps?q=${encodeURIComponent(searchName)}&z=15&ie=UTF8&iwloc=&output=embed`;
 }
 
 export default function ItineraryDetailPage() {
@@ -87,11 +100,15 @@ export default function ItineraryDetailPage() {
 
   return (
     <div style={{ display: 'flex', height: 'calc(100vh - 70px)', overflow: 'hidden' }}>
-      {/* 왼쪽 패널 - 일정 목록 */}
+      {/* 왼쪽 패널 */}
       <div style={{
-        width: '340px', minWidth: '300px', maxWidth: '340px', height: '100%', overflowY: 'auto',
-        backgroundColor: '#fff', borderRight: '1px solid #e2e8f0', padding: '20px',
-        fontSize: '0.88rem',
+        width: '400px', minWidth: '380px', height: '100%',
+        overflowY: 'auto', overflowX: 'hidden',
+        backgroundColor: '#fff', borderRight: '1px solid #e2e8f0',
+        padding: '24px 20px',
+        scrollbarWidth: 'thin',
+        display: 'flex', flexDirection: 'column',
+        boxSizing: 'border-box'
       }}>
         {/* 뒤로가기 */}
         <button
@@ -104,7 +121,7 @@ export default function ItineraryDetailPage() {
         {/* 여행 정보 */}
         <div style={{ marginBottom: '16px' }}>
           <span style={{ color: '#94a3b8', fontSize: '0.75rem' }}>AI 추천 여행</span>
-          <h2 style={{ margin: '4px 0 4px 0', color: '#1e293b', fontSize: '1.2rem', lineHeight: 1.3 }}>{itinerary.title}</h2>
+          <h2 style={{ margin: '4px 0 4px 0', color: '#1e293b', fontSize: '1.15rem', lineHeight: 1.4, wordBreak: 'keep-all' }}>{itinerary.title}</h2>
           <p style={{ margin: 0, color: 'var(--primary)', fontSize: '0.8rem', fontWeight: '600' }}>
             📅 {itinerary.startDate} ~ {itinerary.endDate}
           </p>
@@ -112,13 +129,13 @@ export default function ItineraryDetailPage() {
         </div>
 
         {/* Day 탭 */}
-        <div style={{ display: 'flex', gap: '5px', marginBottom: '14px', flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', gap: '5px', marginBottom: '16px', flexWrap: 'wrap' }}>
           {schedule.days.map((d, i) => (
             <button
               key={i}
               onClick={() => { setSelectedDayIdx(i); setSelectedPlace(schedule.days[i].places[0]?.name || ''); }}
               style={{
-                padding: '5px 12px', borderRadius: '14px', fontSize: '0.75rem', fontWeight: '600',
+                padding: '5px 12px', borderRadius: '14px', fontSize: '0.78rem', fontWeight: '600',
                 border: 'none', cursor: 'pointer',
                 backgroundColor: selectedDayIdx === i ? 'var(--primary)' : '#f1f5f9',
                 color: selectedDayIdx === i ? '#fff' : '#64748b',
@@ -131,7 +148,7 @@ export default function ItineraryDetailPage() {
         </div>
 
         {/* 타임라인 장소 목록 */}
-        <div style={{ position: 'relative', paddingLeft: '28px' }}>
+        <div style={{ position: 'relative', paddingLeft: '30px' }}>
           <div style={{
             position: 'absolute', left: '12px', top: 0, bottom: 0, width: '2px',
             background: 'linear-gradient(to bottom, var(--primary), #c7d2fe)',
@@ -141,16 +158,23 @@ export default function ItineraryDetailPage() {
             const dist = j > 0 ? calcDistance(activeDay.places[j - 1].lat, activeDay.places[j - 1].lng, p.lat, p.lng) : '';
             return (
               <div key={j}>
-                {/* 거리 표시 */}
+                {/* 거리 표시 (트리플 스타일) */}
                 {dist && (
-                  <div style={{ textAlign: 'center', color: '#94a3b8', fontSize: '0.7rem', margin: '2px 0', display: 'flex', alignItems: 'center', gap: '4px', justifyContent: 'center' }}>
-                    🚶 {dist}
+                  <div style={{
+                    display: 'flex', alignItems: 'center', gap: '6px',
+                    padding: '6px 0 6px 0', color: '#94a3b8', fontSize: '0.72rem',
+                  }}>
+                    <div style={{ width: '16px', borderTop: '1px dashed #cbd5e1' }} />
+                    <span style={{ backgroundColor: '#f1f5f9', padding: '2px 8px', borderRadius: '10px', fontWeight: '500' }}>
+                      🚶 {dist}
+                    </span>
                   </div>
                 )}
-                <div style={{ position: 'relative', marginBottom: '10px' }}>
+
+                <div style={{ position: 'relative', marginBottom: '4px' }}>
                   {/* 번호 */}
                   <div style={{
-                    position: 'absolute', left: '-28px', top: '8px', width: '22px', height: '22px',
+                    position: 'absolute', left: '-30px', top: '10px', width: '22px', height: '22px',
                     borderRadius: '50%',
                     backgroundColor: selectedPlace === p.name ? 'var(--primary)' : '#818cf8',
                     color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -164,20 +188,22 @@ export default function ItineraryDetailPage() {
                   <div
                     onClick={() => setSelectedPlace(p.name)}
                     style={{
-                      padding: '10px 12px', borderRadius: '8px', cursor: 'pointer',
+                      padding: '10px 12px', borderRadius: '10px', cursor: 'pointer',
                       backgroundColor: selectedPlace === p.name ? '#eef2ff' : '#f8fafc',
                       border: selectedPlace === p.name ? '2px solid var(--primary)' : '1px solid #e2e8f0',
                       transition: 'all 0.15s',
+                      wordBreak: 'break-word',
+                      overflowWrap: 'break-word',
                     }}
                   >
-                    <strong style={{ display: 'block', color: '#1e293b', fontSize: '0.85rem', marginBottom: '2px' }}>
+                    <strong style={{ display: 'block', color: '#1e293b', fontSize: '0.85rem', marginBottom: '3px', lineHeight: 1.4 }}>
                       {p.name}
                     </strong>
-                    <span style={{ color: '#64748b', fontSize: '0.73rem', lineHeight: 1.4, display: 'block' }}>
+                    <span style={{ color: '#64748b', fontSize: '0.75rem', lineHeight: 1.5, display: 'block', wordBreak: 'keep-all' }}>
                       {p.description}
                     </span>
                     {selectedPlace === p.name && (
-                      <span style={{ color: 'var(--primary)', fontSize: '0.7rem', fontWeight: '600', marginTop: '3px', display: 'block' }}>
+                      <span style={{ color: 'var(--primary)', fontSize: '0.72rem', fontWeight: '600', marginTop: '4px', display: 'block' }}>
                         📍 지도에서 보기
                       </span>
                     )}
@@ -192,6 +218,7 @@ export default function ItineraryDetailPage() {
       {/* 오른쪽 패널 - 지도 */}
       <div style={{ flex: 1, position: 'relative' }}>
         <iframe
+          key={selectedPlace}
           width="100%"
           height="100%"
           style={{ border: 0, display: 'block' }}
@@ -200,7 +227,7 @@ export default function ItineraryDetailPage() {
           src={selectedP ? getMapSrc(selectedP, itinerary.title) : `https://maps.google.com/maps?q=${encodeURIComponent(itinerary.title)}&z=13&output=embed`}
         />
 
-        {/* 하단 Day 탭 + 선택된 장소 카드 오버레이 */}
+        {/* 하단 오버레이 */}
         <div style={{
           position: 'absolute', bottom: 0, left: 0, right: 0,
           background: 'linear-gradient(transparent, rgba(255,255,255,0.95) 30%)',
@@ -238,9 +265,9 @@ export default function ItineraryDetailPage() {
               }}>
                 📍
               </div>
-              <div style={{ flex: 1 }}>
-                <strong style={{ display: 'block', color: '#1e293b', fontSize: '0.9rem' }}>{selectedPlace}</strong>
-                <span style={{ color: '#94a3b8', fontSize: '0.78rem' }}>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <strong style={{ display: 'block', color: '#1e293b', fontSize: '0.88rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{selectedPlace}</strong>
+                <span style={{ color: '#94a3b8', fontSize: '0.75rem', display: 'block', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                   {activeDay.places.find(p => p.name === selectedPlace)?.description || ''}
                 </span>
               </div>

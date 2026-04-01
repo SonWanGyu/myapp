@@ -43,14 +43,16 @@ public class GeminiService {
         prompt.append("- 여행 스타일: ").append(String.join(", ", req.getTravelStyles())).append("\n\n");
         
         prompt.append("결과는 반드시 아래의 JSON 형식만 출력해야 합니다. 어떠한 부연 설명도 덧붙이지 마세요.\n");
-        prompt.append("중요: 각 장소의 정확한 위도(lat)와 경도(lng)를 반드시 포함하세요.\n");
+        prompt.append("중요 지침:\n");
+        prompt.append("1. 각 장소의 위도(lat)와 경도(lng)는 소수점 4자리까지 정확하게 입력하세요.\n");
+        prompt.append("2. 'name'은 '한글명 (영어명)' 형식을 권장하며, 구글 맵에서 검색 가능한 정확한 명칭이어야 합니다.\n");
         prompt.append("{\n");
         prompt.append("  \"title\": \"여행 제목\",\n");
         prompt.append("  \"days\": [\n");
         prompt.append("    {\n");
         prompt.append("      \"day\": \"Day 1\",\n");
         prompt.append("      \"places\": [\n");
-        prompt.append("        { \"name\": \"장소 한글명 (현지 원어명)\", \"description\": \"장소 설명\", \"lat\": 35.6762, \"lng\": 139.6503 }\n");
+        prompt.append("        { \"name\": \"장소 한글명 (English Name)\", \"description\": \"장소 설명\", \"lat\": 35.6762, \"lng\": 139.6503 }\n");
         prompt.append("      ]\n");
         prompt.append("    }\n");
         prompt.append("  ]\n");

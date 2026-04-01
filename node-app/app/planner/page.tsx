@@ -37,9 +37,16 @@ function calcDistance(lat1?: number, lng1?: number, lat2?: number, lng2?: number
   return d < 1 ? `${Math.round(d * 1000)}m` : `${d.toFixed(1)}km`;
 }
 
+function extractSearchName(name: string): string {
+  const match = name.match(/\(([^)]+)\)/);
+  if (match) return match[1].trim();
+  return name;
+}
+
 function getMapSrc(p: Place, fallback: string) {
   if (p.lat && p.lng) return `https://maps.google.com/maps?q=${p.lat},${p.lng}&z=15&ie=UTF8&iwloc=&output=embed`;
-  return `https://maps.google.com/maps?q=${encodeURIComponent(p.name || fallback)}&z=15&ie=UTF8&iwloc=&output=embed`;
+  const searchName = extractSearchName(p.name || fallback);
+  return `https://maps.google.com/maps?q=${encodeURIComponent(searchName)}&z=15&ie=UTF8&iwloc=&output=embed`;
 }
 
 export default function PlannerPage() {
@@ -539,18 +546,23 @@ export default function PlannerPage() {
                  const dist = j > 0 ? calcDistance(activeDay.places[j-1].lat, activeDay.places[j-1].lng, p.lat, p.lng) : '';
                  return (<>
                  {dist && (
-                   <div style={{ textAlign: 'center', color: '#94a3b8', fontSize: '0.75rem', margin: '4px 0 4px 0', display:'flex', alignItems:'center', gap:'6px', justifyContent:'center' }}>
-                     <div style={{ width:'1px', height:'16px', backgroundColor:'#cbd5e1' }}/>
-                     🚶 {dist}
+                   <div style={{
+                     display: 'flex', alignItems: 'center', gap: '6px',
+                     padding: '4px 0', color: '#94a3b8', fontSize: '0.72rem',
+                   }}>
+                     <div style={{ width: '16px', borderTop: '1px dashed #cbd5e1' }} />
+                     <span style={{ backgroundColor: '#f1f5f9', padding: '2px 8px', borderRadius: '10px', fontWeight: '500' }}>
+                       🚶 {dist}
+                     </span>
                    </div>
                  )}
-                 <div key={j} style={{ position: 'relative', marginBottom: '1.2rem' }}>
+                 <div key={j} style={{ position: 'relative', marginBottom: '8px' }}>
                    {/* 번호 원 */}
                    <div style={{
-                     position: 'absolute', left: '-40px', top: '12px', width: '28px', height: '28px',
+                     position: 'absolute', left: '-40px', top: '10px', width: '26px', height: '26px',
                      borderRadius: '50%', backgroundColor: selectedPlace === p.name ? 'var(--primary)' : '#818cf8',
                      color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                     fontSize: '0.8rem', fontWeight: '700', zIndex: 1,
+                     fontSize: '0.75rem', fontWeight: '700', zIndex: 1,
                      boxShadow: '0 2px 6px rgba(99,102,241,0.4)',
                      transition: 'all 0.2s'
                    }}>
@@ -561,19 +573,20 @@ export default function PlannerPage() {
                    <div
                      onClick={() => setSelectedPlace(p.name)}
                      style={{
-                       padding: '16px 20px', borderRadius: '12px', cursor: 'pointer',
+                       padding: '12px 16px', borderRadius: '12px', cursor: 'pointer',
                        backgroundColor: selectedPlace === p.name ? '#eef2ff' : '#fff',
                        border: selectedPlace === p.name ? '2px solid var(--primary)' : '1px solid #e2e8f0',
                        boxShadow: selectedPlace === p.name ? '0 4px 12px rgba(99,102,241,0.15)' : '0 1px 3px rgba(0,0,0,0.04)',
-                       transition: 'all 0.2s'
+                       transition: 'all 0.2s',
+                       wordBreak: 'keep-all'
                      }}
                    >
-                     <strong style={{ display: 'block', color: '#1e293b', fontSize: '1rem', marginBottom: '4px' }}>
+                     <strong style={{ display: 'block', color: '#1e293b', fontSize: '0.95rem', marginBottom: '3px' }}>
                        {p.name}
                      </strong>
-                     <span style={{ color: '#64748b', fontSize: '0.85rem', lineHeight: 1.5 }}>{p.description}</span>
+                     <span style={{ color: '#64748b', fontSize: '0.8rem', lineHeight: 1.5 }}>{p.description}</span>
                      {selectedPlace === p.name && (
-                       <div style={{ marginTop: '8px', color: 'var(--primary)', fontSize: '0.8rem', fontWeight: '600' }}>
+                       <div style={{ marginTop: '6px', color: 'var(--primary)', fontSize: '0.75rem', fontWeight: '600' }}>
                          📍 지도에서 보기
                        </div>
                      )}
