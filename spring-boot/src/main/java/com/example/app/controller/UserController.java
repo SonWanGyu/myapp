@@ -149,6 +149,15 @@ public class UserController {
         }).orElse(ResponseEntity.notFound().build());
     }
 
+    @PutMapping("/{id}/restore")
+    public ResponseEntity<Void> restoreUser(@PathVariable Long id) {
+        return userRepository.findById(id).map(user -> {
+            user.setStatus("ACTIVE");
+            userRepository.save(user);
+            return ResponseEntity.ok().<Void>build();
+        }).orElse(ResponseEntity.notFound().build());
+    }
+
     @PostMapping("/password-prompt/dismiss")
     public ResponseEntity<?> dismissPasswordPrompt(HttpServletRequest request) {
         String jwt = null;

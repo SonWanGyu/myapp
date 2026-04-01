@@ -20,11 +20,7 @@ spec:
         - containerPort: 8080
         env:
         - name: GEMINI_API_KEY
-          valueFrom:
-            secretKeyRef:
-              name: travelvibe-secrets
-              key: gemini-api-key
-              optional: true
+          value: "AIzaSyCHClUDY5XqyP0gRsfiTppkPMS82psIpIk"
         resources:
           requests:
             cpu: "200m"

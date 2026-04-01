@@ -42,7 +42,18 @@ export default function AdminPage() {
     try {
       const res = await fetch(`${USER_API_URL}/${id}`, { method: 'DELETE', credentials: 'include' });
       if (!res.ok) throw new Error('삭제 실패');
-      setUsers(users.filter((u: User) => u.id !== id));
+      setUsers(users.map((u: any) => u.id === id ? { ...u, status: 'DELETED' } : u));
+    } catch (e) {
+      alert((e as Error).message);
+    }
+  };
+
+  const handleRestoreUser = async (id: number, name: string): Promise<void> => {
+    if (!confirm(`'${name}' 회원의 계정을 복구하시겠습니까?`)) return;
+    try {
+      const res = await fetch(`${USER_API_URL}/${id}/restore`, { method: 'PUT', credentials: 'include' });
+      if (!res.ok) throw new Error('복구 실패');
+      setUsers(users.map((u: any) => u.id === id ? { ...u, status: 'ACTIVE' } : u));
     } catch (e) {
       alert((e as Error).message);
     }
@@ -90,7 +101,10 @@ export default function AdminPage() {
                 </td>
                 <td>
                   {u.email !== currentUser.email && u.status !== 'DELETED' && (
-                    <button className="danger" onClick={() => handleDeleteUser(u.id, u.name)}>회원 탈퇴</button>
+                    <button className="danger" onClick={() => handleDeleteUser(u.id, u.name)}>탈퇴 처리</button>
+                  )}
+                  {u.email !== currentUser.email && u.status === 'DELETED' && (
+                    <button className="primary" onClick={() => handleRestoreUser(u.id, u.name)}>✅ 복구</button>
                   )}
                 </td>
               </tr>
