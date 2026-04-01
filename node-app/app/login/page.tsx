@@ -2,6 +2,7 @@
 import { useState, useEffect, FormEvent } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useRouter } from 'next/navigation';
+import { useAlert } from '../context/AlertContext';
 
 export default function LoginPage() {
   const [email, setEmail] = useState<string>('');
@@ -11,6 +12,7 @@ export default function LoginPage() {
   const [isLoginMode, setIsLoginMode] = useState<boolean>(true);
   const { login, isAuthenticated, isInitializing } = useAuth();
   const router = useRouter();
+  const { showAlert } = useAlert();
 
   const USER_API_URL = `http://${typeof window !== 'undefined' ? window.location.hostname : 'localhost'}:8080/api/users`;
 
@@ -39,11 +41,11 @@ export default function LoginPage() {
            router.push('/');
         }
       } catch (err) {
-        alert((err as Error).message);
+        showAlert((err as Error).message);
       }
     } else {
       if (password !== passwordConfirm) {
-        alert('비밀번호가 일치하지 않습니다.');
+        showAlert('비밀번호가 일치하지 않습니다.');
         return;
       }
       try {
@@ -53,10 +55,10 @@ export default function LoginPage() {
           body: JSON.stringify({ email, password, name })
         });
         if (!res.ok) throw new Error('회원가입 실패 (이미 존재하는 이메일일 수 있습니다)');
-        alert('회원가입이 완료되었습니다. 로그인해주세요.');
+        showAlert('회원가입이 완료되었습니다. 로그인해주세요.');
         setIsLoginMode(true);
       } catch (err) {
-        alert((err as Error).message);
+        showAlert((err as Error).message);
       }
     }
   };

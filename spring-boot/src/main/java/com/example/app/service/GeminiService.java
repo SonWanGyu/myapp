@@ -83,10 +83,10 @@ public class GeminiService {
                     }
                 }
             }
-            throw new RuntimeException("AI API 통신 중 오류가 발생했습니다. 응답: " + response);
+            throw new RuntimeException("AI API 응답 에러: " + response);
         } catch (Exception e) {
             e.printStackTrace();
-            throw new RuntimeException("AI API 통신 중 오류가 발생했습니다.");
+            throw new RuntimeException("AI 서버 요청 거부: " + e.getMessage());
         }
     }
 }

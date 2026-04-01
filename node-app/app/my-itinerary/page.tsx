@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useRouter } from 'next/navigation';
+import { useAlert } from '../context/AlertContext';
 import Link from 'next/link';
 
 interface Itinerary {
@@ -16,13 +17,14 @@ interface Itinerary {
 export default function MyItineraryPage() {
   const { isAuthenticated, isInitializing } = useAuth();
   const router = useRouter();
+  const { showAlert } = useAlert();
   const [itineraries, setItineraries] = useState<Itinerary[]>([]);
   const [tab, setTab] = useState<'UPCOMING'|'PAST'>('UPCOMING');
 
   useEffect(() => {
     if (!isInitializing) {
       if (!isAuthenticated) {
-        alert('로그인이 필요합니다.');
+        showAlert('로그인이 필요합니다.');
         router.push('/login');
         return;
       }
@@ -81,7 +83,7 @@ export default function MyItineraryPage() {
                <div key={it.id} className="card" style={{ padding: '1.5rem' }}>
                  <h3 style={{ margin: '0 0 10px 0', color: 'var(--primary)' }}>{it.title}</h3>
                  <p className="text-muted">🗓️ {it.startDate} ~ {it.endDate}</p>
-                 <button className="secondary mt-3 w-100" onClick={() => alert('상세 보기 준비 중!')}>일정 상세 보기</button>
+                 <button className="secondary mt-3 w-100" onClick={() => showAlert('상세 보기 준비 중!')}>일정 상세 보기</button>
                </div>
              ))}
           </div>

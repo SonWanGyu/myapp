@@ -3,17 +3,19 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useRouter } from 'next/navigation';
+import { useAlert } from '../context/AlertContext';
 
 export default function MyPage() {
   const { currentUser, isInitializing, isAuthenticated, logout } = useAuth();
   const router = useRouter();
+  const { showAlert } = useAlert();
 
   const [name, setName] = useState('');
   
   useEffect(() => {
     if (!isInitializing) {
       if (!isAuthenticated) {
-        alert('로그인이 필요합니다.');
+        showAlert('로그인이 필요합니다.');
         router.push('/login');
       } else if (currentUser) {
         setName(currentUser.name);
@@ -31,14 +33,14 @@ export default function MyPage() {
         body: JSON.stringify({ name, email: currentUser?.email })
       });
       if (res.ok) {
-        alert('정보가 수정되었습니다. 다시 로그인 해 주세요.');
+        showAlert('정보가 수정되었습니다. 다시 로그인 해 주세요.');
         logout(); // Token 갱신을 위해 로그아웃 유도
       } else {
-        alert('수정 실패');
+        showAlert('수정 실패');
       }
     } catch (e) {
       console.error(e);
-      alert('오류 발생');
+      showAlert('오류 발생');
     }
   };
 

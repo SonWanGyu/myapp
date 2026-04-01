@@ -44,7 +44,7 @@ public class AiPlannerController {
             String jsonResult = geminiService.generatePlannerResponse(payload);
             return ResponseEntity.ok(new AiPlannerResponse(jsonResult));
         } catch (Exception e) {
-            return ResponseEntity.status(500).body("일정 생성 실패: " + e.getMessage());
+            return ResponseEntity.status(500).body(java.util.Map.of("error", "일정 생성 실패: " + e.getMessage()));
         }
     }
 }

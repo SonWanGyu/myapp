@@ -2,9 +2,11 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from './context/AuthContext';
+import { useAlert } from './context/AlertContext';
 
 export default function Home() {
   const { isInitializing, isAuthenticated, currentUser } = useAuth();
+  const { showAlert } = useAlert();
   const router = useRouter();
 
   useEffect(() => {
@@ -32,7 +34,7 @@ export default function Home() {
         <div className="ai-content">
           <h2>취향에 맞게 일정을 추천해 드립니다</h2>
           <p>복잡한 계획은 AI에게 맞기고, 여행의 즐거움만 누리세요.</p>
-          <button className="primary ai-btn" onClick={() => alert('신규 기능 준비 중입니다!')}>바로 추천받기</button>
+          <button className="primary ai-btn" onClick={() => showAlert('신규 기능 준비 중입니다!')}>바로 추천받기</button>
         </div>
       </section>
     </div>

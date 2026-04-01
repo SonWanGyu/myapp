@@ -1,17 +1,19 @@
 'use client';
 import { useState, FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
+import { useAlert } from '../context/AlertContext';
 
 export default function ChangePasswordPage() {
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  const { showAlert } = useAlert();
 
   const handlePasswordChange = async (e: FormEvent) => {
     e.preventDefault();
     if (newPassword !== confirmPassword) {
-      alert('비밀번호가 일치하지 않습니다.');
+      showAlert('비밀번호가 일치하지 않습니다.');
       return;
     }
     setIsLoading(true);
@@ -24,10 +26,10 @@ export default function ChangePasswordPage() {
       });
       if (!res.ok) throw new Error('비밀번호 변경 실패');
       
-      alert('비밀번호가 성공적으로 변경되었습니다!');
+      showAlert('비밀번호가 성공적으로 변경되었습니다!');
       window.location.href = '/';
     } catch (err) {
-      alert((err as Error).message);
+      showAlert((err as Error).message);
     } finally {
       setIsLoading(false);
     }

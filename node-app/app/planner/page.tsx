@@ -3,8 +3,8 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '../context/AuthContext';
-import { CONTINENTS } from '../lib/travelData';
-import { fetchCountriesData, CountryData } from '../lib/api';
+import { CONTINENTS, TRAVEL_DESTINATIONS, TravelDestination } from '../lib/travelData';
+import { useAlert } from '../context/AlertContext';
 
 interface PlanDay {
   day: string;
@@ -20,11 +20,12 @@ export default function PlannerPage() {
   const { isAuthenticated, currentUser } = useAuth();
   const router = useRouter();
 
+  const { showAlert, showConfirm } = useAlert();
   const [step, setStep] = useState(1);
   const [mode, setMode] = useState<'AUTO' | 'MANUAL' | null>(null);
 
   // States
-  const [allData, setAllData] = useState<CountryData[]>([]);
+  const allData: TravelDestination[] = TRAVEL_DESTINATIONS;
   const [autoLocation, setAutoLocation] = useState('');
   const [autoCountry, setAutoCountry] = useState('');
   
@@ -48,7 +49,7 @@ export default function PlannerPage() {
   const [selectedPlace, setSelectedPlace] = useState<string>('');
 
   useEffect(() => {
-    fetchCountriesData().then(data => setAllData(data));
+    // 모든 데이터는 로컬 빅데이터를 직접 사용 (더 이상 API 비동기 지연 없음)
   }, []);
 
   const resetFromStep = (targetStep: number) => {
@@ -84,7 +85,7 @@ export default function PlannerPage() {
 
   const handleCreatePlan = async () => {
     if (!isAuthenticated) {
-        alert('로그인이 필요한 기능입니다.');
+        showAlert('로그인이 필요한 기능입니다.');
         router.push('/login');
         return;
     }
@@ -118,7 +119,10 @@ export default function PlannerPage() {
         body: JSON.stringify(payload)
       });
       
-      if (!res.ok) throw new Error('AI 생성 실패');
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.error || 'AI 통신 실패');
+      }
       
       const jsonStr = await res.json();
       try {
@@ -126,12 +130,12 @@ export default function PlannerPage() {
         setResult(parsed as PlanResult);
       } catch (parseEr) {
         console.error(parseEr);
-        alert('AI가 비정상적인 데이터를 반환했습니다.');
+        showAlert('AI가 비정상적인 데이터를 반환했습니다.');
         setStep(8);
       }
     } catch (err) {
       console.error(err);
-      alert('일정 생성 중 오류가 발생했습니다.');
+      showAlert(`일정 생성 중 오류가 발생했습니다.\n상세: ${(err as Error).message}`);
       setStep(8);
     } finally {
       setLoading(false);
@@ -155,14 +159,14 @@ export default function PlannerPage() {
         body: JSON.stringify(payload)
       });
       if (res.ok) {
-        alert('내 일정에 담겼습니다!');
+        showAlert('내 일정에 담겼습니다!');
         router.push('/my-itinerary');
       } else {
-        alert('저장 실패!');
+        showAlert('저장 실패!');
       }
     } catch (e) {
       console.error(e);
-      alert('저장 오류');
+      showAlert('저장 오류');
     }
   };
 
@@ -170,7 +174,7 @@ export default function PlannerPage() {
     if (selectedCountries.includes(country)) {
       setSelectedCountries(selectedCountries.filter(c => c !== country));
       // 언셀렉트 시 해당 국가에 속한 도시 전체 삭제
-      const countryObj = allData.find(d => d.koreanName === country || d.country === country);
+      const countryObj = allData.find(d => d.country === country);
       const countryCities = countryObj?.cities || [];
       setSelectedCities(prev => prev.filter(city => !countryCities.includes(city)));
       if (activeCountry === country) setActiveCountry('');
@@ -260,16 +264,16 @@ export default function PlannerPage() {
               onChange={e => setAutoCountry(e.target.value)}
             >
               <option value="">국가 미지정 (AI가 자유롭게 추천해 줍니다!)</option>
-              {allData.map(d => (
-                <option key={d.koreanName || d.country} value={d.koreanName || d.country}>
-                  {d.koreanName || d.country}
+              {allData.filter(d => !autoLocation || d.continent === autoLocation).map(d => (
+                <option key={d.country} value={d.country}>
+                  {d.country}
                 </option>
               ))}
             </select>
 
             <div className="form-actions mt-4">
               <button className="primary" onClick={() => {
-                if (!autoLocation && !autoCountry) { alert('대륙 또는 국가를 하나 이상 선택해주세요.'); return; }
+                if (!autoLocation && !autoCountry) { showAlert('대륙 또는 국가를 하나 이상 선택해주세요.'); return; }
                 setStep(5);
               }}>다음</button>
             </div>
@@ -279,25 +283,24 @@ export default function PlannerPage() {
         {step === 3 && mode === 'MANUAL' && (
           <div>
             <h3>여행할 국가들을 선택해주세요. (중복 가능)</h3>
-            <input type="text" placeholder="국가 한글/영문 검색..." value={countrySearch} onChange={e => setCountrySearch(e.target.value.toLowerCase())} />
+            <input type="text" placeholder="국가 검색..." value={countrySearch} onChange={e => setCountrySearch(e.target.value.toLowerCase())} />
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginTop: '1rem', maxHeight: '300px', overflowY: 'auto' }}>
-              {allData.filter(d => (d.koreanName?.toLowerCase() || '').includes(countrySearch) || d.country.toLowerCase().includes(countrySearch)).map(d => {
-                const displayName = d.koreanName || d.country;
+              {allData.filter(d => d.country.includes(countrySearch)).map(d => {
                 return (
                   <button 
-                    key={displayName} 
-                    className={selectedCountries.includes(displayName) ? 'primary' : 'secondary'}
-                    onClick={() => toggleCountry(displayName)}
+                    key={d.country} 
+                    className={selectedCountries.includes(d.country) ? 'primary' : 'secondary'}
+                    onClick={() => toggleCountry(d.country)}
                     style={{ borderRadius: '20px' }}
                   >
-                    {displayName}
+                    {d.country}
                   </button>
                 );
               })}
             </div>
             <div className="form-actions mt-3">
               <button className="primary" onClick={() => {
-                if (selectedCountries.length === 0) { alert('최소 1개 이상의 국가를 선택해주세요.'); return; }
+                if (selectedCountries.length === 0) { showAlert('최소 1개 이상의 국가를 선택해주세요.'); return; }
                 setStep(4);
               }}>다음</button>
             </div>
@@ -321,9 +324,9 @@ export default function PlannerPage() {
             </div>
             {activeCountry ? (
                <div>
-                  <input type="text" placeholder={`${activeCountry} 내 도시 영문 검색...`} value={citySearch} onChange={e => setCitySearch(e.target.value.toLowerCase())} />
+                  <input type="text" placeholder={`${activeCountry} 내 도시 검색...`} value={citySearch} onChange={e => setCitySearch(e.target.value.toLowerCase())} />
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginTop: '1rem', maxHeight: '300px', overflowY: 'auto' }}>
-                    {allData.find(d => d.koreanName === activeCountry || d.country === activeCountry)?.cities.filter(c => c.toLowerCase().includes(citySearch)).map(c => (
+                    {allData.find(d => d.country === activeCountry)?.cities.filter(c => c.includes(citySearch)).map(c => (
                       <button 
                         key={c} 
                         className={selectedCities.includes(c) ? 'primary' : 'secondary'}
@@ -340,7 +343,7 @@ export default function PlannerPage() {
             )}
             <div className="form-actions mt-3">
               <button className="primary" onClick={() => {
-                if (selectedCities.length === 0) { alert('최소 1개 이상의 도시를 선택해주세요.'); return; }
+                if (selectedCities.length === 0) { showAlert('최소 1개 이상의 도시를 선택해주세요.'); return; }
                 setStep(5);
               }}>다음</button>
             </div>
@@ -367,7 +370,7 @@ export default function PlannerPage() {
             </div>
             <div className="form-actions mt-3">
               <button className="primary" onClick={() => {
-                if (!startDate || !endDate) { alert('출발일과 종료일을 정확히 선택해주세요.'); return; }
+                if (!startDate || !endDate) { showAlert('출발일과 종료일을 정확히 선택해주세요.'); return; }
                 setStep(6);
               }}>다음</button>
             </div>
@@ -380,7 +383,7 @@ export default function PlannerPage() {
             <input type="number" min={1} max={50} value={headcount} onChange={e => setHeadcount(Number(e.target.value))} />
             <div className="form-actions mt-3">
               <button className="primary" onClick={() => {
-                if (headcount < 1) { alert('인원수는 최소 1명 이상이어야 합니다.'); return; }
+                if (headcount < 1) { showAlert('인원수는 최소 1명 이상이어야 합니다.'); return; }
                 setStep(7);
               }}>다음</button>
             </div>
@@ -404,7 +407,7 @@ export default function PlannerPage() {
             </div>
             <div className="form-actions mt-3">
               <button className="primary" onClick={() => {
-                if (!companion) { alert('동행자를 선택해주세요.'); return; }
+                if (!companion) { showAlert('동행자를 선택해주세요.'); return; }
                 setStep(8);
               }}>다음</button>
             </div>
@@ -429,7 +432,7 @@ export default function PlannerPage() {
             <div className="form-actions mt-5 flex-between">
                <span className="text-muted">선택이 모두 끝났습니다!</span>
                <button className="primary" onClick={() => {
-                 if (travelStyles.length === 0) { alert('여행 테마를 최소 1개 이상 골라주세요.'); return; }
+                 if (travelStyles.length === 0) { showAlert('여행 테마를 최소 1개 이상 골라주세요.'); return; }
                  handleCreatePlan();
                }} style={{ padding: '1rem 2rem', fontSize: '1.2rem' }}>
                  ✨ 일정 만들기 (AI 생성)

@@ -4,11 +4,13 @@ import { useAuth } from '../context/AuthContext';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { User } from '../types';
+import { useAlert } from '../context/AlertContext';
 
 export default function AdminPage() {
   const { currentUser, isInitializing, isAuthenticated } = useAuth();
   const [users, setUsers] = useState<User[]>([]);
   const router = useRouter();
+  const { showAlert, showConfirm } = useAlert();
   const USER_API_URL = `http://${typeof window !== 'undefined' ? window.location.hostname : 'localhost'}:8080/api/users`;
 
   useEffect(() => {
@@ -18,7 +20,7 @@ export default function AdminPage() {
         return;
       }
       if (currentUser?.role !== 'ADMIN') {
-        alert('관리자 권한이 필요합니다.');
+        showAlert('관리자 권한이 필요합니다.');
         router.push('/');
         return;
       }
@@ -33,30 +35,32 @@ export default function AdminPage() {
       setUsers(await res.json());
     } catch (e) {
       console.error(e);
-      alert((e as Error).message);
+      showAlert((e as Error).message);
     }
   };
 
-  const handleDeleteUser = async (id: number, name: string): Promise<void> => {
-    if (!confirm(`정말 '${name}' 회원을 탈퇴시키겠습니까?`)) return;
-    try {
-      const res = await fetch(`${USER_API_URL}/${id}`, { method: 'DELETE', credentials: 'include' });
-      if (!res.ok) throw new Error('삭제 실패');
-      setUsers(users.map((u: any) => u.id === id ? { ...u, status: 'DELETED' } : u));
-    } catch (e) {
-      alert((e as Error).message);
-    }
+  const handleDeleteUser = (id: number, name: string): void => {
+    showConfirm(`정말 '${name}' 회원을 탈퇴시키겠습니까?`, async () => {
+      try {
+        const res = await fetch(`${USER_API_URL}/${id}`, { method: 'DELETE', credentials: 'include' });
+        if (!res.ok) throw new Error('삭제 실패');
+        setUsers(users.map((u: any) => u.id === id ? { ...u, status: 'DELETED' } : u));
+      } catch (e) {
+        showAlert((e as Error).message);
+      }
+    });
   };
 
-  const handleRestoreUser = async (id: number, name: string): Promise<void> => {
-    if (!confirm(`'${name}' 회원의 계정을 복구하시겠습니까?`)) return;
-    try {
-      const res = await fetch(`${USER_API_URL}/${id}/restore`, { method: 'PUT', credentials: 'include' });
-      if (!res.ok) throw new Error('복구 실패');
-      setUsers(users.map((u: any) => u.id === id ? { ...u, status: 'ACTIVE' } : u));
-    } catch (e) {
-      alert((e as Error).message);
-    }
+  const handleRestoreUser = (id: number, name: string): void => {
+    showConfirm(`'${name}' 회원의 계정을 복구하시겠습니까?`, async () => {
+      try {
+        const res = await fetch(`${USER_API_URL}/${id}/restore`, { method: 'PUT', credentials: 'include' });
+        if (!res.ok) throw new Error('복구 실패');
+        setUsers(users.map((u: any) => u.id === id ? { ...u, status: 'ACTIVE' } : u));
+      } catch (e) {
+        showAlert((e as Error).message);
+      }
+    });
   };
 
   if (isInitializing || !currentUser || currentUser.role !== 'ADMIN') {

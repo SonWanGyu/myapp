@@ -1,5 +1,6 @@
 import './globals.css';
 import { AuthProvider } from './context/AuthContext';
+import { AlertProvider } from './context/AlertContext';
 import Header from './components/Header';
 import { Metadata } from 'next';
 
@@ -16,10 +17,12 @@ export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="ko">
       <body>
-        <AuthProvider>
-          <Header />
-          {children}
-        </AuthProvider>
+        <AlertProvider>
+          <AuthProvider>
+            <Header />
+            {children}
+          </AuthProvider>
+        </AlertProvider>
       </body>
     </html>
   );
