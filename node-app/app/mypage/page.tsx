@@ -55,12 +55,12 @@ export default function MyPage() {
          </div>
 
          <div className="form-group mt-3">
-           <label className="fw-500">이름</label>
-           <input type="text" value={name} onChange={e => setName(e.target.value)} />
+           <label className="fw-500">이름 (변경 불가)</label>
+           <input type="text" value={name} disabled style={{ backgroundColor: '#e2e8f0' }} />
          </div>
-
-         <div className="form-actions mt-5">
-           <button className="primary w-100" onClick={handleUpdate}>수정 내용 저장</button>
+         
+         <div className="text-center mt-4">
+           <button className="secondary w-100" onClick={() => router.push('/')}>홈으로 돌아가기</button>
          </div>
       </div>
     </div>

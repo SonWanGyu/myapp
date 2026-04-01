@@ -83,7 +83,7 @@ public class GeminiService {
                     }
                 }
             }
-            return "{}";
+            throw new RuntimeException("AI API 통신 중 오류가 발생했습니다. 응답: " + response);
         } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException("AI API 통신 중 오류가 발생했습니다.");

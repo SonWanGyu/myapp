@@ -59,6 +59,7 @@ public class UserController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody User loginUser, HttpServletResponse response) {
         return userRepository.findByEmail(loginUser.getEmail())
+                .filter(u -> !"DELETED".equals(u.getStatus()))
                 .map(user -> {
                     if (passwordEncoder.matches(loginUser.getPassword(), user.getPassword())) {
                         String token = jwtUtil.generateToken(user.getEmail(), user.getRole(), user.getName());
@@ -74,7 +75,7 @@ public class UserController {
                         return ResponseEntity.status(401).body("Invalid password");
                     }
                 })
-                .orElse(ResponseEntity.status(404).body("User not found"));
+                .orElse(ResponseEntity.status(404).body("User not found or deleted"));
     }
 
     @GetMapping("/me")
@@ -141,11 +142,11 @@ public class UserController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
-        if (userRepository.existsById(id)) {
-            userRepository.deleteById(id);
-            return ResponseEntity.ok().build();
-        }
-        return ResponseEntity.notFound().build();
+        return userRepository.findById(id).map(user -> {
+            user.setStatus("DELETED");
+            userRepository.save(user);
+            return ResponseEntity.ok().<Void>build();
+        }).orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping("/password-prompt/dismiss")

@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '../context/AuthContext';
-import { fetchCountriesData, CountryData } from '../lib/api';
+import { TRAVEL_DESTINATIONS, CONTINENTS, TravelDestination } from '../lib/travelData';
 
 interface PlanDay {
   day: string;
@@ -23,7 +23,7 @@ export default function PlannerPage() {
   const [mode, setMode] = useState<'AUTO' | 'MANUAL' | null>(null);
 
   // States
-  const [allData, setAllData] = useState<CountryData[]>([]);
+  const allData: TravelDestination[] = TRAVEL_DESTINATIONS;
   const [autoLocation, setAutoLocation] = useState('');
   
   const [selectedCountries, setSelectedCountries] = useState<string[]>([]);
@@ -46,7 +46,7 @@ export default function PlannerPage() {
   const [selectedPlace, setSelectedPlace] = useState<string>('');
 
   useEffect(() => {
-    fetchCountriesData().then(data => setAllData(data));
+    // Moved metadata to local curated travelData.ts
   }, []);
 
   const resetFromStep = (targetStep: number) => {
@@ -224,10 +224,22 @@ export default function PlannerPage() {
 
         {step === 2 && mode === 'AUTO' && (
           <div>
-            <h3>어디로 떠나고 싶으신가요? (대륙 또는 나라)</h3>
+            <h3>어디로 떠나고 싶으신가요? (대륙 또는 나라를 선택하거나 직접 입력하세요)</h3>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', marginBottom: '1rem' }}>
+              {CONTINENTS.map(c => (
+                <button 
+                  key={c} 
+                  className={autoLocation === c ? 'primary' : 'secondary'} 
+                  onClick={() => setAutoLocation(c)}
+                  style={{ borderRadius: '20px' }}
+                >
+                  {c}
+                </button>
+              ))}
+            </div>
             <input 
               type="text" 
-              placeholder="예) 유럽, 동남아, 스위스..." 
+              placeholder="직접 입력 (예: 유럽, 동남아, 스위스...)" 
               value={autoLocation} 
               onChange={e => setAutoLocation(e.target.value)} 
             />
@@ -302,9 +314,19 @@ export default function PlannerPage() {
           <div>
             <h3>언제 출발하시나요?</h3>
             <div style={{ display: 'flex', gap: '1rem' }}>
-              <input type="date" value={startDate} onChange={e => setStartDate(e.target.value)} />
+              <input 
+                type="date" 
+                value={startDate} 
+                min={new Date().toISOString().split('T')[0]}
+                onChange={e => setStartDate(e.target.value)} 
+              />
               <span style={{ alignSelf: 'center' }}>~</span>
-              <input type="date" value={endDate} onChange={e => setEndDate(e.target.value)} />
+              <input 
+                type="date" 
+                value={endDate} 
+                min={startDate || new Date().toISOString().split('T')[0]} 
+                onChange={e => setEndDate(e.target.value)} 
+              />
             </div>
             <div className="form-actions mt-3">
               <button className="primary" onClick={() => setStep(6)} disabled={!startDate || !endDate}>다음</button>

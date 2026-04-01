@@ -35,6 +35,9 @@ public class User {
     @Column(nullable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime passwordUpdatedAt;
     
+    @Column(nullable = false, columnDefinition = "VARCHAR2(20) DEFAULT 'ACTIVE'")
+    private String status = "ACTIVE";
+
     @Column(nullable = false, columnDefinition = "VARCHAR2(255) DEFAULT 'DEFAULT'")
     private String passwordPromptStatus = "DEFAULT";
 }

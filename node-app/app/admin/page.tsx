@@ -13,7 +13,11 @@ export default function AdminPage() {
 
   useEffect(() => {
     if (!isInitializing) {
-      if (!isAuthenticated || currentUser?.role !== 'ADMIN') {
+      if (!isAuthenticated) {
+        router.push('/');
+        return;
+      }
+      if (currentUser?.role !== 'ADMIN') {
         alert('관리자 권한이 필요합니다.');
         router.push('/');
         return;
@@ -64,11 +68,12 @@ export default function AdminPage() {
               <th>이름</th>
               <th>이메일</th>
               <th>권한</th>
+              <th>상태</th>
               <th>관리</th>
             </tr>
           </thead>
           <tbody>
-            {users.map((u: User) => (
+            {users.map((u: User & { status?: string }) => (
               <tr key={u.id}>
                 <td>{u.id}</td>
                 <td className="fw-500">{u.name}</td>
@@ -79,8 +84,13 @@ export default function AdminPage() {
                   </span>
                 </td>
                 <td>
-                  {u.email !== currentUser.email && (
-                    <button className="danger" onClick={() => handleDeleteUser(u.id, u.name)}>탈퇴(삭제)</button>
+                  <span style={{ color: u.status === 'DELETED' ? 'red' : 'green', fontWeight: 'bold' }}>
+                    {u.status === 'DELETED' ? '탈퇴' : '정상'}
+                  </span>
+                </td>
+                <td>
+                  {u.email !== currentUser.email && u.status !== 'DELETED' && (
+                    <button className="danger" onClick={() => handleDeleteUser(u.id, u.name)}>회원 탈퇴</button>
                   )}
                 </td>
               </tr>

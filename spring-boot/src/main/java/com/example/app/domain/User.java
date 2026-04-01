@@ -40,6 +40,10 @@ public class User {
     @Column(nullable = false, columnDefinition = "VARCHAR2(255) DEFAULT 'DEFAULT'")
     private String passwordPromptStatus = "DEFAULT";
     
+    // "ACTIVE", "DELETED"
+    @Column(nullable = false, columnDefinition = "VARCHAR2(20) DEFAULT 'ACTIVE'")
+    private String status = "ACTIVE";
+    
     @PrePersist
     protected void onCreate() {
         if (createdAt == null) {
