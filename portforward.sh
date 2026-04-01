@@ -8,8 +8,8 @@ sudo -v
 sudo pkill -f "kubectl port-forward" 2>/dev/null
 
 # 백그라운드로 포트 포워딩 실행
-# 80포트(HTTP 기본)로 연결 → URL에 포트 번호 없이 접속 가능!
-sudo kubectl port-forward svc/node-app-service 80:3000 --address 0.0.0.0 &
+# 80포트(HTTP 기본)로 연결하기 위해 sudo를 쓰지만, 설정 파일을 놓치지 않도록 --kubeconfig 명시
+sudo kubectl --kubeconfig=$HOME/.kube/config port-forward svc/node-app-service 80:3000 --address 0.0.0.0 &
 kubectl port-forward svc/spring-boot-service 8080:8080 --address 0.0.0.0 &
 
 echo ""
