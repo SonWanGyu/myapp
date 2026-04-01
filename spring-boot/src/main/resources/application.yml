@@ -1,4 +1,6 @@
 spring:
+  profiles:
+    include: secret
   datasource:
     url: jdbc:oracle:thin:@host.minikube.internal:1521/XEPDB1
     driver-class-name: oracle.jdbc.OracleDriver

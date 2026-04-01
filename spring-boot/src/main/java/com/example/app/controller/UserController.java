@@ -118,6 +118,27 @@ public class UserController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    @PutMapping("/me")
+    public ResponseEntity<User> updateMyProfile(HttpServletRequest request, @RequestBody User userDetails) {
+        String jwt = null;
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie c : cookies) {
+                if ("jwt".equals(c.getName())) jwt = c.getValue();
+            }
+        }
+        if (jwt != null && jwtUtil.validateToken(jwt)) {
+            String email = jwtUtil.extractEmail(jwt);
+            return userRepository.findByEmail(email)
+                .map(user -> {
+                    user.setName(userDetails.getName());
+                    return ResponseEntity.ok(userRepository.save(user));
+                })
+                .orElse(ResponseEntity.notFound().build());
+        }
+        return ResponseEntity.status(401).build();
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
         if (userRepository.existsById(id)) {
