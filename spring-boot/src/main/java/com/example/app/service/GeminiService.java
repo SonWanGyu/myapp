@@ -18,7 +18,7 @@ public class GeminiService {
 
     private final RestTemplate restTemplate;
 
-    @Value("${gemini.api.key}")
+    @Value("${gemini.api.key:}")
     private String geminiApiKey;
 
     public GeminiService(RestTemplate restTemplate) {
