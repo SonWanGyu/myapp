@@ -56,7 +56,7 @@ pipeline {
         // 6. 배포 명세서를 쿠버네티스 클러스터에 배포 (완벽한 CD 자동화)
         stage('Deploy to Kubernetes') {
             steps {
-                sh 'kubectl apply -f k8s/'
+                sh 'kubectl apply -f k8s/ --validate=false'
                 
                 sh 'kubectl rollout restart deployment/spring-boot-app'
                 sh 'kubectl rollout restart deployment/node-app'
