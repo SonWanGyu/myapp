@@ -6,14 +6,40 @@ import { useAuth } from '../context/AuthContext';
 import { CONTINENTS, TRAVEL_DESTINATIONS, TravelDestination } from '../lib/travelData';
 import { useAlert } from '../context/AlertContext';
 
+interface Place {
+  name: string;
+  description: string;
+  lat?: number;
+  lng?: number;
+}
+
 interface PlanDay {
   day: string;
-  places: { name: string; description: string }[];
+  places: Place[];
 }
 
 interface PlanResult {
   title: string;
   days: PlanDay[];
+}
+
+// 두 좌표 간 거리 계산 (km)
+function calcDistance(lat1?: number, lng1?: number, lat2?: number, lng2?: number): string {
+  if (!lat1 || !lng1 || !lat2 || !lng2) return '';
+  const R = 6371;
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLng = (lng2 - lng1) * Math.PI / 180;
+  const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+    Math.sin(dLng/2) * Math.sin(dLng/2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+  const d = R * c;
+  return d < 1 ? `${Math.round(d * 1000)}m` : `${d.toFixed(1)}km`;
+}
+
+function getMapSrc(p: Place, fallback: string) {
+  if (p.lat && p.lng) return `https://maps.google.com/maps?q=${p.lat},${p.lng}&z=15&ie=UTF8&iwloc=&output=embed`;
+  return `https://maps.google.com/maps?q=${encodeURIComponent(p.name || fallback)}&z=15&ie=UTF8&iwloc=&output=embed`;
 }
 
 export default function PlannerPage() {
@@ -469,14 +495,11 @@ export default function PlannerPage() {
 
              {/* 지도 */}
              <div style={{ borderRadius: '16px', overflow: 'hidden', marginBottom: '1.5rem', boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}>
-               <iframe
-                 width="100%"
-                 height="350"
-                 style={{ border: 0, display: 'block' }}
-                 loading="lazy"
-                 allowFullScreen
-                 src={`https://maps.google.com/maps?q=${encodeURIComponent(selectedPlace || activeDay.places[0]?.name || result.title)}&t=&z=13&ie=UTF8&iwloc=&output=embed`}
-               />
+               {(() => {
+                 const mp = activeDay.places.find(p => p.name === selectedPlace) || activeDay.places[0];
+                 const src = mp ? getMapSrc(mp, result.title) : `https://maps.google.com/maps?q=${encodeURIComponent(result.title)}&z=13&output=embed`;
+                 return <iframe width="100%" height="300" style={{ border: 0, display: 'block' }} loading="lazy" allowFullScreen src={src} />;
+               })()}
              </div>
 
              {/* Day 탭 */}
@@ -512,7 +535,15 @@ export default function PlannerPage() {
                  background: 'linear-gradient(to bottom, var(--primary), #c7d2fe)', borderRadius: '2px'
                }} />
                
-               {activeDay.places.map((p, j) => (
+               {activeDay.places.map((p, j) => {
+                 const dist = j > 0 ? calcDistance(activeDay.places[j-1].lat, activeDay.places[j-1].lng, p.lat, p.lng) : '';
+                 return (<>
+                 {dist && (
+                   <div style={{ textAlign: 'center', color: '#94a3b8', fontSize: '0.75rem', margin: '4px 0 4px 0', display:'flex', alignItems:'center', gap:'6px', justifyContent:'center' }}>
+                     <div style={{ width:'1px', height:'16px', backgroundColor:'#cbd5e1' }}/>
+                     🚶 {dist}
+                   </div>
+                 )}
                  <div key={j} style={{ position: 'relative', marginBottom: '1.2rem' }}>
                    {/* 번호 원 */}
                    <div style={{
@@ -548,7 +579,8 @@ export default function PlannerPage() {
                      )}
                    </div>
                  </div>
-               ))}
+                 </>);
+               })}
              </div>
 
              {/* 내 일정에 담기 플로팅 버튼 */}
