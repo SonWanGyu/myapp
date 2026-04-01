@@ -20,7 +20,7 @@ spec:
         - containerPort: 8080
         env:
         - name: GEMINI_API_KEY
-          value: "AIzaSyCasJllgEs0myoAaQ7TrgoPFExd3FbN9zw"
+          value: "AIzaSyCn3b4TYnlmMZOrOQY5TA1ILBSR9HHgv5c"
         resources:
           requests:
             cpu: "200m"
