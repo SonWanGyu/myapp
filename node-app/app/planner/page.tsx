@@ -120,8 +120,15 @@ export default function PlannerPage() {
       });
       
       if (!res.ok) {
-        const errorData = await res.json();
-        throw new Error(errorData.error || 'AI 통신 실패');
+        const errorText = await res.text();
+        let errorMessage = `AI 통신 실패 (상태 코드: ${res.status})`;
+        try {
+          const errorData = JSON.parse(errorText);
+          errorMessage = errorData.error || errorMessage;
+        } catch {
+          errorMessage = errorText ? `서버 에러: ${errorText}` : errorMessage;
+        }
+        throw new Error(errorMessage);
       }
       
       const jsonStr = await res.json();
