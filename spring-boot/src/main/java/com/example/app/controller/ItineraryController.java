@@ -51,4 +51,15 @@ public class ItineraryController {
         List<Itinerary> list = itineraryRepository.findByEmailOrderByStartDateDesc(email);
         return ResponseEntity.ok(list);
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getItineraryById(HttpServletRequest request, @PathVariable Long id) {
+        String email = getEmailFromJwt(request);
+        if (email == null) return ResponseEntity.status(401).body("로그인이 필요합니다.");
+        
+        return itineraryRepository.findById(id)
+            .filter(it -> it.getEmail().equals(email))
+            .map(it -> ResponseEntity.ok((Object) it))
+            .orElse(ResponseEntity.status(404).body("일정을 찾을 수 없습니다."));
+    }
 }

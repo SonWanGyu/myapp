@@ -83,7 +83,7 @@ export default function MyItineraryPage() {
                <div key={it.id} className="card" style={{ padding: '1.5rem' }}>
                  <h3 style={{ margin: '0 0 10px 0', color: 'var(--primary)' }}>{it.title}</h3>
                  <p className="text-muted">🗓️ {it.startDate} ~ {it.endDate}</p>
-                 <button className="secondary mt-3 w-100" onClick={() => showAlert('상세 보기 준비 중!')}>일정 상세 보기</button>
+                 <button className="secondary mt-3 w-100" onClick={() => router.push(`/my-itinerary/${it.id}`)}>일정 상세 보기</button>
                </div>
              ))}
           </div>

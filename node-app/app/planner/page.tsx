@@ -47,6 +47,7 @@ export default function PlannerPage() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<PlanResult | null>(null);
   const [selectedPlace, setSelectedPlace] = useState<string>('');
+  const [selectedDayIdx, setSelectedDayIdx] = useState(0);
 
   useEffect(() => {
     // 모든 데이터는 로컬 빅데이터를 직접 사용 (더 이상 API 비동기 지연 없음)
@@ -455,47 +456,118 @@ export default function PlannerPage() {
           </div>
         )}
 
-        {step === 9 && !loading && result && (
-          <div>
-            <div className="flex-between mb-4">
-              <h2 style={{ color: 'var(--primary)', margin: 0 }}>{result.title}</h2>
-              <button className="primary" onClick={saveToMyItinerary}>📥 내 일정에 담기</button>
-            </div>
+        {step === 9 && !loading && result && (() => {
+          const activeDay = result.days[selectedDayIdx] || result.days[0];
+          return (
+           <div>
+             {/* 헤더 - 여행 타이틀 */}
+             <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+               <div style={{ fontSize: '3rem', marginBottom: '0.5rem' }}>🌍</div>
+               <h2 style={{ color: '#1e293b', margin: '0 0 0.3rem 0', fontSize: '1.6rem' }}>{result.title}</h2>
+               <p className="text-muted" style={{ margin: 0 }}>AI가 추천해 준 맞춤 일정으로 여행을 떠나보세요.</p>
+             </div>
 
-            <div style={{ display: 'flex', gap: '20px', alignItems: 'flex-start' }}>
-               <div style={{ flex: 1, maxHeight: '60vh', overflowY: 'auto', paddingRight: '10px' }}>
-                 {result.days.map((d, i) => (
-                   <div key={i} style={{ marginBottom: '20px', padding: '15px', border: '1px solid var(--border)', borderRadius: '12px', backgroundColor: '#f8fafc' }}>
-                     <h3 style={{ marginTop: 0, color: '#0f172a' }}>{d.day}</h3>
-                     {d.places.map((p, j) => (
-                       <div key={j} style={{ marginBottom: '10px', padding: '10px', backgroundColor: '#fff', borderRadius: '8px', cursor: 'pointer', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }} onClick={() => setSelectedPlace(p.name)}>
-                          <strong style={{ display: 'block', color: 'var(--primary)' }}>📍 {p.name}</strong>
-                          <span className="text-muted" style={{ fontSize: '0.9rem' }}>{p.description}</span>
+             {/* 지도 */}
+             <div style={{ borderRadius: '16px', overflow: 'hidden', marginBottom: '1.5rem', boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}>
+               <iframe
+                 width="100%"
+                 height="350"
+                 style={{ border: 0, display: 'block' }}
+                 loading="lazy"
+                 allowFullScreen
+                 src={`https://maps.google.com/maps?q=${encodeURIComponent(selectedPlace || activeDay.places[0]?.name || result.title)}&t=&z=13&ie=UTF8&iwloc=&output=embed`}
+               />
+             </div>
+
+             {/* Day 탭 */}
+             <div style={{ display: 'flex', gap: '8px', marginBottom: '1.5rem', overflowX: 'auto', paddingBottom: '4px' }}>
+               {result.days.map((d, i) => (
+                 <button
+                   key={i}
+                   onClick={() => { setSelectedDayIdx(i); setSelectedPlace(''); }}
+                   style={{
+                     padding: '8px 20px',
+                     borderRadius: '20px',
+                     border: selectedDayIdx === i ? '2px solid var(--primary)' : '1px solid #e2e8f0',
+                     backgroundColor: selectedDayIdx === i ? 'var(--primary)' : '#fff',
+                     color: selectedDayIdx === i ? '#fff' : '#64748b',
+                     fontWeight: selectedDayIdx === i ? '700' : '500',
+                     cursor: 'pointer',
+                     fontSize: '0.9rem',
+                     whiteSpace: 'nowrap',
+                     transition: 'all 0.2s',
+                     flexShrink: 0,
+                   }}
+                 >
+                   {d.day}
+                 </button>
+               ))}
+             </div>
+
+             {/* 타임라인 장소 카드 */}
+             <div style={{ position: 'relative', paddingLeft: '40px' }}>
+               {/* 타임라인 세로선 */}
+               <div style={{
+                 position: 'absolute', left: '18px', top: '0', bottom: '0', width: '2px',
+                 background: 'linear-gradient(to bottom, var(--primary), #c7d2fe)', borderRadius: '2px'
+               }} />
+               
+               {activeDay.places.map((p, j) => (
+                 <div key={j} style={{ position: 'relative', marginBottom: '1.2rem' }}>
+                   {/* 번호 원 */}
+                   <div style={{
+                     position: 'absolute', left: '-40px', top: '12px', width: '28px', height: '28px',
+                     borderRadius: '50%', backgroundColor: selectedPlace === p.name ? 'var(--primary)' : '#818cf8',
+                     color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                     fontSize: '0.8rem', fontWeight: '700', zIndex: 1,
+                     boxShadow: '0 2px 6px rgba(99,102,241,0.4)',
+                     transition: 'all 0.2s'
+                   }}>
+                     {j + 1}
+                   </div>
+                   
+                   {/* 장소 카드 */}
+                   <div
+                     onClick={() => setSelectedPlace(p.name)}
+                     style={{
+                       padding: '16px 20px', borderRadius: '12px', cursor: 'pointer',
+                       backgroundColor: selectedPlace === p.name ? '#eef2ff' : '#fff',
+                       border: selectedPlace === p.name ? '2px solid var(--primary)' : '1px solid #e2e8f0',
+                       boxShadow: selectedPlace === p.name ? '0 4px 12px rgba(99,102,241,0.15)' : '0 1px 3px rgba(0,0,0,0.04)',
+                       transition: 'all 0.2s'
+                     }}
+                   >
+                     <strong style={{ display: 'block', color: '#1e293b', fontSize: '1rem', marginBottom: '4px' }}>
+                       {p.name}
+                     </strong>
+                     <span style={{ color: '#64748b', fontSize: '0.85rem', lineHeight: 1.5 }}>{p.description}</span>
+                     {selectedPlace === p.name && (
+                       <div style={{ marginTop: '8px', color: 'var(--primary)', fontSize: '0.8rem', fontWeight: '600' }}>
+                         📍 지도에서 보기
                        </div>
-                     ))}
+                     )}
                    </div>
-                 ))}
-               </div>
+                 </div>
+               ))}
+             </div>
 
-               <div style={{ flex: 1, position: 'sticky', top: '100px' }}>
-                 {selectedPlace ? (
-                   <iframe
-                     width="100%"
-                     height="500"
-                     style={{ border: 0, borderRadius: '12px', boxShadow: '0 4px 10px rgba(0,0,0,0.1)' }}
-                     loading="lazy"
-                     allowFullScreen
-                     src={`https://www.google.com/maps/embed/v1/place?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&q=${encodeURIComponent(selectedPlace)}`}
-                   ></iframe>
-                 ) : (
-                   <div style={{ height: '500px', backgroundColor: '#f1f5f9', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#94a3b8' }}>
-                     좌측 목록에서 장소를 클릭하면<br />여기에 지도가 표시됩니다.
-                   </div>
-                 )}
-               </div>
-            </div>
-          </div>
-        )}
+             {/* 내 일정에 담기 플로팅 버튼 */}
+             <div style={{ position: 'sticky', bottom: '20px', textAlign: 'center', marginTop: '2rem', zIndex: 10 }}>
+               <button
+                 className="primary"
+                 onClick={saveToMyItinerary}
+                 style={{
+                   padding: '14px 40px', fontSize: '1.1rem', borderRadius: '50px',
+                   boxShadow: '0 6px 24px rgba(99,102,241,0.4)',
+                   display: 'inline-flex', alignItems: 'center', gap: '8px'
+                 }}
+               >
+                 📥 내 일정으로 담기
+               </button>
+             </div>
+           </div>
+          );
+        })()}
       </div>
     </div>
   );
