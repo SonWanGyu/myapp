@@ -28,7 +28,7 @@ public class GeminiService {
 
     @SuppressWarnings("unchecked")
     public String generatePlannerResponse(AiPlannerRequest req) {
-        String apiUrl = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=" + geminiApiKey;
+        String apiUrl = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" + geminiApiKey;
 
         StringBuilder prompt = new StringBuilder("당신은 완벽한 여행 일정을 짜주는 최고의 여행 플래너 AI입니다. 다음 여행 정보에 맞춰 추천 일정을 작성해주세요.\n");
         if ("AUTO".equalsIgnoreCase(req.getMode())) {
