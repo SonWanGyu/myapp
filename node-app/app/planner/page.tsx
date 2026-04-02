@@ -54,7 +54,8 @@ function getMapSrc(p: Place, fallback: string) {
   const cityHint = extractCityHint(fallback);
   const query = encodeURIComponent(`${searchName} ${cityHint}`.trim());
   
-  return `https://maps.google.com/maps?q=${query}&z=15&ie=UTF8&output=embed`;
+  // iwloc=addr 옵션을 사용하여 정보창(InfoWindow)이 기본적으로 열려있도록 유도합니다.
+  return `https://maps.google.com/maps?q=${query}&z=15&ie=UTF8&iwloc=addr&output=embed`;
 }
 
 function getGoogleMapsSearchLink(p: Place, fallback: string) {
@@ -556,25 +557,8 @@ export default function PlannerPage() {
                     <>
                       <iframe width="100%" height="300" style={{ border: 0, display: 'block' }} loading="lazy" allowFullScreen src={src} />
                       
-                      {/* 지도 좌측 상단 오버레이 (버튼 + 카드) -> 구글 UI(상단바)를 피해 80px 아래로 배치 */}
-                      <div style={{ position: 'absolute', top: '80px', left: '15px', zIndex: 10, display: 'flex', flexDirection: 'column', gap: '8px', width: '260px' }}>
-                        {mp && (
-                          <a
-                            href={getGoogleMapsSearchLink(mp, result.title)}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            style={{
-                              backgroundColor: '#fff', padding: '8px 14px', borderRadius: '8px', 
-                              boxShadow: '0 2px 10px rgba(0,0,0,0.15)', textDecoration: 'none',
-                              color: '#1e293b', fontSize: '0.78rem', fontWeight: '700',
-                              display: 'flex', alignItems: 'center', gap: '6px', border: '1px solid #e2e8f0',
-                              width: 'fit-content'
-                            }}
-                          >
-                            지도에서 열기 ↗
-                          </a>
-                        )}
-
+                      {/* 지도 좌측 상단 장소 정보 카드 (top: 15px) */}
+                      <div style={{ position: 'absolute', top: '15px', left: '15px', zIndex: 10, display: 'flex', flexDirection: 'column', gap: '8px', width: '260px' }}>
                         {selectedPlace && mp && (
                           <div className="animate-fade-in" style={{
                             backgroundColor: 'rgba(255,255,255,0.95)', borderRadius: '10px', padding: '10px 14px',

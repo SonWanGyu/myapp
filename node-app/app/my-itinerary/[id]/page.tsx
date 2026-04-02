@@ -45,7 +45,8 @@ function getMapSrc(p: Place, fallback: string) {
   const cityHint = extractCityHint(fallback);
   const query = encodeURIComponent(`${searchName} ${cityHint}`.trim());
   
-  return `https://maps.google.com/maps?q=${query}&z=15&ie=UTF8&output=embed`;
+  // iwloc=addr 옵션을 사용하여 정보창(InfoWindow)이 기본적으로 열려있도록 유도합니다.
+  return `https://maps.google.com/maps?q=${query}&z=15&ie=UTF8&iwloc=addr&output=embed`;
 }
 
 function getGoogleMapsSearchLink(p: Place, fallback: string) {
@@ -237,23 +238,8 @@ export default function ItineraryDetailPage() {
           src={selectedP ? getMapSrc(selectedP, itinerary.title) : `https://maps.google.com/maps?q=${encodeURIComponent(itinerary.title)}&z=13&output=embed`}
         />
 
-        {/* 지도에서 열기 및 장소 정보 카드 (구글 기본 UI와 겹치지 않게 80px 아래로 배치) */}
-        <div style={{ position: 'absolute', top: '80px', left: '15px', zIndex: 10, display: 'flex', flexDirection: 'column', gap: '10px', width: '280px' }}>
-          <a
-            href={selectedP ? getGoogleMapsSearchLink(selectedP, itinerary.title) : '#'}
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{
-              backgroundColor: '#fff', padding: '10px 16px', borderRadius: '10px', 
-              boxShadow: '0 4px 12px rgba(0,0,0,0.15)', textDecoration: 'none',
-              color: '#1e293b', fontSize: '0.82rem', fontWeight: '700',
-              display: 'flex', alignItems: 'center', gap: '8px', border: '1px solid #e2e8f0',
-              width: 'fit-content'
-            }}
-          >
-            지도에서 열기 ↗
-          </a>
-
+        {/* 장소 정보 카드 (버튼 제거 후 상단 배치) */}
+        <div style={{ position: 'absolute', top: '15px', left: '15px', zIndex: 10, display: 'flex', flexDirection: 'column', gap: '8px', width: '280px' }}>
           {selectedPlace && (
             <div className="animate-fade-in" style={{
               backgroundColor: 'rgba(255,255,255,0.95)', borderRadius: '12px', padding: '12px 16px',
