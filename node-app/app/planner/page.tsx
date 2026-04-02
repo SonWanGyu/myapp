@@ -547,14 +547,51 @@ export default function PlannerPage() {
                <p className="text-muted" style={{ margin: 0 }}>AI가 추천해 준 맞춤 일정으로 여행을 떠나보세요.</p>
              </div>
 
-             {/* 지도 */}
-             <div style={{ borderRadius: '16px', overflow: 'hidden', marginBottom: '1.5rem', boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}>
-               {(() => {
-                 const mp = activeDay.places.find(p => p.name === selectedPlace) || activeDay.places[0];
-                 const src = mp ? getMapSrc(mp, result.title) : `https://maps.google.com/maps?q=${encodeURIComponent(result.title)}&z=13&output=embed`;
-                 return <iframe width="100%" height="300" style={{ border: 0, display: 'block' }} loading="lazy" allowFullScreen src={src} />;
-               })()}
-             </div>
+              {/* 지도 및 장소 정보 카드 (구글 UI와 겹치지 않게 80px 아래로 배치) */}
+              <div style={{ position: 'relative', borderRadius: '16px', overflow: 'hidden', marginBottom: '1.5rem', boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}>
+                {(() => {
+                  const mp = activeDay.places.find(p => p.name === selectedPlace) || activeDay.places[0];
+                  const src = mp ? getMapSrc(mp, result.title) : `https://maps.google.com/maps?q=${encodeURIComponent(result.title)}&z=13&output=embed`;
+                  return (
+                    <>
+                      <iframe width="100%" height="300" style={{ border: 0, display: 'block' }} loading="lazy" allowFullScreen src={src} />
+                      
+                      {/* 지도 좌측 상단 오버레이 (버튼 + 카드) -> 구글 UI(상단바)를 피해 80px 아래로 배치 */}
+                      <div style={{ position: 'absolute', top: '80px', left: '15px', zIndex: 10, display: 'flex', flexDirection: 'column', gap: '8px', width: '260px' }}>
+                        {mp && (
+                          <a
+                            href={getGoogleMapsSearchLink(mp, result.title)}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{
+                              backgroundColor: '#fff', padding: '8px 14px', borderRadius: '8px', 
+                              boxShadow: '0 2px 10px rgba(0,0,0,0.15)', textDecoration: 'none',
+                              color: '#1e293b', fontSize: '0.78rem', fontWeight: '700',
+                              display: 'flex', alignItems: 'center', gap: '6px', border: '1px solid #e2e8f0',
+                              width: 'fit-content'
+                            }}
+                          >
+                            지도에서 열기 ↗
+                          </a>
+                        )}
+
+                        {selectedPlace && mp && (
+                          <div className="animate-fade-in" style={{
+                            backgroundColor: 'rgba(255,255,255,0.95)', borderRadius: '10px', padding: '10px 14px',
+                            boxShadow: '0 4px 12px rgba(0,0,0,0.1)', border: '1px solid rgba(226,232,240,0.8)',
+                            backdropFilter: 'blur(4px)'
+                          }}>
+                            <strong style={{ display: 'block', color: '#111827', fontSize: '0.85rem', marginBottom: '3px' }}>{selectedPlace}</strong>
+                            <span style={{ color: '#4b5563', fontSize: '0.75rem', lineHeight: 1.4, display: 'block' }}>
+                              {mp.description}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    </>
+                  );
+                })()}
+              </div>
 
              {/* Day 탭 */}
              <div style={{ display: 'flex', gap: '8px', marginBottom: '1.5rem', overflowX: 'auto', paddingBottom: '4px' }}>

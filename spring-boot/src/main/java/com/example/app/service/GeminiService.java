@@ -49,9 +49,9 @@ public class GeminiService {
         
         prompt.append("결과는 반드시 아래의 JSON 형식만 출력해야 합니다. 어떠한 부연 설명도 덧붙이지 마세요.\n");
         prompt.append("중요 지침:\n");
-        prompt.append("1. 'name'은 구글 맵에서 검색 가능한 **공식 명칭**이어야 합니다. 예: '칭다오 신호산 공원 (Qingdao Xinhaoshan Park)'.\n");
+        prompt.append("1. 'name'은 구글 맵에서 검색 가능한 **공식 명칭**이어야 하며, 검색 정확도를 위해 반드시 **도시 이름을 포함**하세요. 예: '다이묘, 후쿠오카 (Daimyo, Fukuoka)'.\n");
         prompt.append("2. 각 장소의 위도(lat)와 경도(lng)는 소수점 4자리까지 정확할 때만 입력하세요. 불확실하다면 반드시 lat: null, lng: null로 비우세요.\n");
-        prompt.append("3. AI가 생성한 좌표보다 '정확한 이름'이 지도 검색에 더 중요합니다.\n");
+        prompt.append("3. AI가 생성한 좌표보다 '도시가 포함된 정확한 이름'이 지도 검색에 가장 중요합니다.\n");
         prompt.append("{\n");
         prompt.append("  \"title\": \"여행 제목\",\n");
         prompt.append("  \"days\": [\n");
