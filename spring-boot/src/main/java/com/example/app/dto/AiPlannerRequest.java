@@ -13,4 +13,5 @@ public class AiPlannerRequest {
     private Integer headCount;
     private String companions;
     private List<String> travelStyles;
+    private String tempo; // BUSY, RELAX
 }

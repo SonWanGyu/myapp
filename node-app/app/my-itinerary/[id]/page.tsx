@@ -36,12 +36,20 @@ function extractSearchName(name: string): string {
 
 function getMapSrc(p: Place, fallback: string) {
   const searchName = extractSearchName(p.name || fallback);
+  
   // 좌표가 없거나 0이면 이름으로만 검색
   if (!p.lat || !p.lng || p.lat === 0 || p.lng === 0) {
     return `https://maps.google.com/maps?q=${encodeURIComponent(searchName)}&z=16&ie=UTF8&iwloc=B&output=embed`;
   }
-  // 좌표가 있더라도 이름과 함께 검색해야 핀이 더 정확함
-  return `https://maps.google.com/maps?q=${p.lat},${p.lng}+(${encodeURIComponent(searchName)})&z=16&ie=UTF8&iwloc=B&output=embed`;
+
+  // 좌표가 90/-90 (위도) 또는 180/-180 (경도) 범위를 벗어나는지 체크 (AI 환각 방지)
+  if (Math.abs(p.lat) > 90 || Math.abs(p.lng) > 180) {
+    return `https://maps.google.com/maps?q=${encodeURIComponent(searchName)}&z=16&ie=UTF8&iwloc=B&output=embed`;
+  }
+
+  // 좌표와 이름을 함께 사용하여 가장 정확한 핀을 찍음
+  // 콤마(,) 뒤에 이름을 괄호 없이 더해서 검색 신뢰도 높임
+  return `https://maps.google.com/maps?q=${p.lat},${p.lng}+${encodeURIComponent(searchName)}&z=17&ie=UTF8&iwloc=B&output=embed`;
 }
 
 export default function ItineraryDetailPage() {

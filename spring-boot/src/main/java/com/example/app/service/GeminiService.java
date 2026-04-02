@@ -40,7 +40,12 @@ public class GeminiService {
         prompt.append("- 날짜: ").append(req.getStartDate()).append(" ~ ").append(req.getEndDate()).append("\n");
         prompt.append("- 인원: ").append(req.getHeadCount()).append("명\n");
         prompt.append("- 동반자: ").append(req.getCompanions()).append("\n");
-        prompt.append("- 여행 스타일: ").append(String.join(", ", req.getTravelStyles())).append("\n\n");
+        prompt.append("- 여행 스타일: ").append(String.join(", ", req.getTravelStyles())).append("\n");
+        if ("BUSY".equalsIgnoreCase(req.getTempo())) {
+            prompt.append("- 여행 템포: 여행간김에 부지런히 (하루에 최대한 많은 장소를 방문하고 꽉 찬 일정을 짜주세요)\n\n");
+        } else {
+            prompt.append("- 여행 템포: 여행은 쉬러 가는거지 (하루에 최소한의 장소만 방문하고 여유로운 휴식 위주의 일정을 짜주세요)\n\n");
+        }
         
         prompt.append("결과는 반드시 아래의 JSON 형식만 출력해야 합니다. 어떠한 부연 설명도 덧붙이지 마세요.\n");
         prompt.append("중요 지침:\n");

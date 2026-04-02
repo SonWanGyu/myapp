@@ -45,12 +45,20 @@ function extractSearchName(name: string): string {
 
 function getMapSrc(p: Place, fallback: string) {
   const searchName = extractSearchName(p.name || fallback);
-  // 좌표가 0,0이거나 없으면 이름으로만 검색
-  if (!p.lat || !p.lng || (p.lat === 0 && p.lng === 0)) {
+  
+  // 좌표가 없거나 0이면 이름으로만 검색
+  if (!p.lat || !p.lng || p.lat === 0 || p.lng === 0) {
     return `https://maps.google.com/maps?q=${encodeURIComponent(searchName)}&z=16&ie=UTF8&iwloc=B&output=embed`;
   }
-  // 좌표가 있더라도 이름과 함께 검색해야 핀이 더 정확함
-  return `https://maps.google.com/maps?q=${p.lat},${p.lng}+(${encodeURIComponent(searchName)})&z=16&ie=UTF8&iwloc=B&output=embed`;
+
+  // 좌표가 90/-90 (위도) 또는 180/-180 (경도) 범위를 벗어나는지 체크 (AI 환각 방지)
+  if (Math.abs(p.lat) > 90 || Math.abs(p.lng) > 180) {
+    return `https://maps.google.com/maps?q=${encodeURIComponent(searchName)}&z=16&ie=UTF8&iwloc=B&output=embed`;
+  }
+
+  // 좌표와 이름을 함께 사용하여 가장 정확한 핀을 찍음
+  // 콤마(,) 뒤에 이름을 괄호 없이 더해서 검색 신뢰도 높임
+  return `https://maps.google.com/maps?q=${p.lat},${p.lng}+${encodeURIComponent(searchName)}&z=17&ie=UTF8&iwloc=B&output=embed`;
 }
 
 export default function PlannerPage() {
@@ -74,6 +82,7 @@ export default function PlannerPage() {
   const [headcount, setHeadcount] = useState<number>(1);
   const [companion, setCompanion] = useState('');
   const [travelStyles, setTravelStyles] = useState<string[]>([]);
+  const [tempo, setTempo] = useState<'BUSY' | 'RELAX' | null>(null);
 
   // Search terms
   const [countrySearch, setCountrySearch] = useState('');
@@ -116,6 +125,7 @@ export default function PlannerPage() {
     }
     if (targetStep <= 8) {
       setTravelStyles([]);
+      setTempo(null);
     }
     setResult(null);
     setStep(targetStep);
@@ -144,7 +154,8 @@ export default function PlannerPage() {
       endDate,
       headCount: headcount,
       companions: companion,
-      travelStyles
+      travelStyles,
+      tempo
     };
 
     try {
@@ -251,7 +262,7 @@ export default function PlannerPage() {
       
       {step < 9 && (
         <div style={{ display: 'flex', gap: '10px', marginBottom: '20px', overflowX: 'auto', paddingBottom: '10px' }}>
-          {[1,2,3,4,5,6,7,8].map(s => {
+          {[1,2,3,4,5,6,7,8,9].map(s => {
             // mode='AUTO' 일 때 3, 4 스킵
             if (mode === 'AUTO' && (s===3 || s===4)) return null;
             // mode='MANUAL' 일 때 2 스킵
@@ -475,10 +486,40 @@ export default function PlannerPage() {
                 </button>
               ))}
             </div>
-            <div className="form-actions mt-5 flex-between">
-               <span className="text-muted">선택이 모두 끝났습니다!</span>
+            <div className="form-actions mt-5">
                <button className="primary" onClick={() => {
                  if (travelStyles.length === 0) { showAlert('여행 테마를 최소 1개 이상 골라주세요.'); return; }
+                 setStep(9);
+               }}>다음</button>
+            </div>
+          </div>
+        )}
+
+        {step === 9 && (
+          <div>
+            <h3>여행의 템포를 결정해주세요.</h3>
+            <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
+              <button 
+                className={tempo === 'BUSY' ? 'primary' : 'secondary'} 
+                style={{ flex: 1, padding: '2rem', borderRadius: '15px' }} 
+                onClick={() => setTempo('BUSY')}
+              >
+                🏃 여행간김에 부지런히<br/>
+                <span style={{ fontSize: '0.8rem', opacity: 0.8 }}>(빽빽한 일정 선호)</span>
+              </button>
+              <button 
+                className={tempo === 'RELAX' ? 'primary' : 'secondary'} 
+                style={{ flex: 1, padding: '2rem', borderRadius: '15px' }} 
+                onClick={() => setTempo('RELAX')}
+              >
+                🧘 여행은 쉬러 가는거지<br/>
+                <span style={{ fontSize: '0.8rem', opacity: 0.8 }}>(여유로운 휴식 선호)</span>
+              </button>
+            </div>
+            <div className="form-actions mt-5 flex-between">
+               <span className="text-muted">마지막 단계입니다!</span>
+               <button className="primary" onClick={() => {
+                 if (!tempo) { showAlert('여행 템포를 선택해주세요.'); return; }
                  handleCreatePlan();
                }} style={{ padding: '1rem 2rem', fontSize: '1.2rem' }}>
                  ✨ 일정 만들기 (AI 생성)
