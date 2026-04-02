@@ -43,18 +43,24 @@ function extractSearchName(name: string): string {
   return name;
 }
 
+// 여행 제목([후쿠오카] 등)에서 도시 힌트를 추출하는 함수
+function extractCityHint(title: string): string {
+  const match = title.match(/\[([^\]]+)\]/) || title.match(/^([^\s&]+)/);
+  return match ? match[1] : '';
+}
+
 function getMapSrc(p: Place, fallback: string) {
-  // 이름이 있으면 이름으로 검색하는 것이 가장 정확합니다. (좌표 오차가 바다를 찍는 현상 방지)
-  const searchName = extractSearchName(p.name || fallback);
-  const query = encodeURIComponent(searchName);
+  const searchName = extractSearchName(p.name);
+  const cityHint = extractCityHint(fallback);
+  const query = encodeURIComponent(`${searchName} ${cityHint}`.trim());
   
-  // z=15로 설정하여 주변 지형물과 함께 장소가 잘 보이도록 최적화합니다.
   return `https://maps.google.com/maps?q=${query}&z=15&ie=UTF8&output=embed`;
 }
 
 function getGoogleMapsSearchLink(p: Place, fallback: string) {
-  const searchName = extractSearchName(p.name || fallback);
-  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(searchName)}`;
+  const searchName = extractSearchName(p.name);
+  const cityHint = extractCityHint(fallback);
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${searchName} ${cityHint}`.trim())}`;
 }
 
 export default function PlannerPage() {

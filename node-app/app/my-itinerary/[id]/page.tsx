@@ -34,19 +34,24 @@ function extractSearchName(name: string): string {
   return name;
 }
 
+// 여행 제목([후쿠오카] 등)에서 도시 힌트를 추출하는 함수
+function extractCityHint(title: string): string {
+  const match = title.match(/\[([^\]]+)\]/) || title.match(/^([^\s&]+)/);
+  return match ? match[1] : '';
+}
+
 function getMapSrc(p: Place, fallback: string) {
-  // 이름이 있으면 이름으로 검색하는 것이 가장 정확합니다. (좌표 오차 무시)
-  const searchName = extractSearchName(p.name || fallback);
-  const query = encodeURIComponent(searchName);
+  const searchName = extractSearchName(p.name);
+  const cityHint = extractCityHint(fallback);
+  const query = encodeURIComponent(`${searchName} ${cityHint}`.trim());
   
-  // z=15 정도로 설정하여 장소 주변이 잘 보이게 합니다.
   return `https://maps.google.com/maps?q=${query}&z=15&ie=UTF8&output=embed`;
 }
 
-// 구글 맵 외부 링크 생성 (이름 기반 검색)
 function getGoogleMapsSearchLink(p: Place, fallback: string) {
-  const searchName = extractSearchName(p.name || fallback);
-  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(searchName)}`;
+  const searchName = extractSearchName(p.name);
+  const cityHint = extractCityHint(fallback);
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${searchName} ${cityHint}`.trim())}`;
 }
 
 export default function ItineraryDetailPage() {
@@ -232,31 +237,44 @@ export default function ItineraryDetailPage() {
           src={selectedP ? getMapSrc(selectedP, itinerary.title) : `https://maps.google.com/maps?q=${encodeURIComponent(itinerary.title)}&z=13&output=embed`}
         />
 
-        {/* 지도에서 열기 버튼 (좌표 오류 해결 버전) */}
-        <div style={{ position: 'absolute', top: '15px', left: '15px', zIndex: 10 }}>
+        {/* 지도에서 열기 및 장소 정보 카드 (버튼 아래로 배치) */}
+        <div style={{ position: 'absolute', top: '15px', left: '15px', zIndex: 10, display: 'flex', flexDirection: 'column', gap: '10px', width: '280px' }}>
           <a
             href={selectedP ? getGoogleMapsSearchLink(selectedP, itinerary.title) : '#'}
             target="_blank"
             rel="noopener noreferrer"
             style={{
-              backgroundColor: '#fff', padding: '8px 14px', borderRadius: '8px', 
-              boxShadow: '0 2px 10px rgba(0,0,0,0.15)', textDecoration: 'none',
-              color: '#1e293b', fontSize: '0.8rem', fontWeight: '600',
-              display: 'flex', alignItems: 'center', gap: '6px', border: '1px solid #e2e8f0'
+              backgroundColor: '#fff', padding: '10px 16px', borderRadius: '10px', 
+              boxShadow: '0 4px 12px rgba(0,0,0,0.15)', textDecoration: 'none',
+              color: '#1e293b', fontSize: '0.85rem', fontWeight: '700',
+              display: 'flex', alignItems: 'center', gap: '8px', border: '1px solid #e2e8f0',
+              width: 'fit-content'
             }}
           >
             지도에서 열기 ↗
           </a>
+
+          {selectedPlace && (
+            <div className="animate-fade-in" style={{
+              backgroundColor: 'rgba(255,255,255,0.95)', borderRadius: '12px', padding: '12px 16px',
+              boxShadow: '0 4px 16px rgba(0,0,0,0.1)', border: '1px solid rgba(226,232,240,0.8)',
+              backdropFilter: 'blur(4px)'
+            }}>
+              <strong style={{ display: 'block', color: '#101827', fontSize: '0.9rem', marginBottom: '4px' }}>{selectedPlace}</strong>
+              <span style={{ color: '#4b5563', fontSize: '0.78rem', lineHeight: 1.4, display: 'block', wordBreak: 'keep-all' }}>
+                {activeDay.places.find(p => p.name === selectedPlace)?.description || ''}
+              </span>
+            </div>
+          )}
         </div>
 
-        {/* 하단 오버레이 */}
+        {/* 하단 오버레이 (Day 탭 유지) */}
         <div style={{
           position: 'absolute', bottom: 0, left: 0, right: 0,
-          background: 'linear-gradient(transparent, rgba(255,255,255,0.95) 30%)',
+          background: 'linear-gradient(transparent, rgba(255,255,255,0.95) 40%)',
           padding: '40px 20px 16px 20px',
         }}>
-          {/* Day 하단 탭 */}
-          <div style={{ display: 'flex', gap: '6px', marginBottom: '10px', overflowX: 'auto' }}>
+          <div style={{ display: 'flex', gap: '6px', marginBottom: '0px', overflowX: 'auto' }}>
             {schedule.days.map((d, i) => (
               <button
                 key={i}
@@ -272,29 +290,6 @@ export default function ItineraryDetailPage() {
               </button>
             ))}
           </div>
-
-          {/* 선택된 장소 카드 */}
-          {selectedPlace && (
-            <div style={{
-              backgroundColor: '#fff', borderRadius: '12px', padding: '12px 16px',
-              boxShadow: '0 4px 16px rgba(0,0,0,0.1)',
-              display: 'flex', alignItems: 'center', gap: '12px',
-            }}>
-              <div style={{
-                width: '36px', height: '36px', borderRadius: '50%', backgroundColor: 'var(--primary)',
-                color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontSize: '1rem', flexShrink: 0,
-              }}>
-                📍
-              </div>
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <strong style={{ display: 'block', color: '#1e293b', fontSize: '0.88rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{selectedPlace}</strong>
-                <span style={{ color: '#94a3b8', fontSize: '0.75rem', display: 'block', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                  {activeDay.places.find(p => p.name === selectedPlace)?.description || ''}
-                </span>
-              </div>
-            </div>
-          )}
         </div>
       </div>
     </div>
