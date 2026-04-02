@@ -99,8 +99,33 @@ export default function PlannerPage() {
   const [selectedDayIdx, setSelectedDayIdx] = useState(0);
 
   useEffect(() => {
-    // 모든 데이터는 로컬 빅데이터를 직접 사용 (더 이상 API 비동기 지연 없음)
-  }, []);
+    // 로그인 시 보관된 '임시 일정'이 있으면 자동 저장 시도
+    if (isAuthenticated) {
+      const pending = localStorage.getItem('pending_itinerary');
+      if (pending) {
+        const performAutoSave = async () => {
+          try {
+            const data = JSON.parse(pending);
+            const apiUrl = `http://${window.location.hostname}:8080/api/itineraries`;
+            const res = await fetch(apiUrl, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              credentials: 'include',
+              body: JSON.stringify(data)
+            });
+            if (res.ok) {
+              localStorage.removeItem('pending_itinerary');
+              showAlert('보관 중이던 일정이 자동으로 저장되었습니다!');
+              router.push('/my-itinerary');
+            }
+          } catch (e) {
+            console.error('Auto-save error:', e);
+          }
+        };
+        performAutoSave();
+      }
+    }
+  }, [isAuthenticated, router]);
 
   const resetFromStep = (targetStep: number) => {
     if (targetStep <= 1) {
@@ -137,12 +162,6 @@ export default function PlannerPage() {
   };
 
   const handleCreatePlan = async () => {
-    if (!isAuthenticated) {
-        showAlert('로그인이 필요한 기능입니다.');
-        router.push('/login');
-        return;
-    }
-
     setLoading(true);
     setStep(10); // 결과 및 로딩 단계(Step 10)로 이동
     setResult(null);
@@ -201,6 +220,21 @@ export default function PlannerPage() {
 
   const saveToMyItinerary = async () => {
     if (!result) return;
+
+    if (!isAuthenticated) {
+      // 비로그인 상태: 현재 일정 보관 후 로그인 페이지로 유도
+      const pending = {
+        title: result.title,
+        startDate,
+        endDate,
+        scheduleJson: JSON.stringify(result)
+      };
+      localStorage.setItem('pending_itinerary', JSON.stringify(pending));
+      showAlert('일정을 저장하려면 로그인이 필요합니다. 로그인 후 자동으로 저장됩니다.');
+      router.push('/login?redirect=/planner');
+      return;
+    }
+
     try {
        const apiUrl = `http://${typeof window !== 'undefined' ? window.location.hostname : 'localhost'}:8080/api/itineraries`;
        const payload = {

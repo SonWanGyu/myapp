@@ -18,7 +18,9 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (!isInitializing && isAuthenticated) {
-      router.push('/');
+      const searchParams = new URLSearchParams(window.location.search);
+      const redirectPath = searchParams.get('redirect') || '/';
+      router.push(redirectPath);
     }
   }, [isAuthenticated, isInitializing, router]);
 
@@ -38,7 +40,11 @@ export default function LoginPage() {
         if (resMe.ok) {
            const userData = await resMe.json();
            login(userData);
-           router.push('/');
+           
+           // 리다이렉트 경로 처리
+           const searchParams = new URLSearchParams(window.location.search);
+           const redirectPath = searchParams.get('redirect') || '/';
+           router.push(redirectPath);
         }
       } catch (err) {
         showAlert((err as Error).message);
