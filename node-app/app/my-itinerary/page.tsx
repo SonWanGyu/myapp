@@ -17,31 +17,57 @@ interface Itinerary {
 export default function MyItineraryPage() {
   const { isAuthenticated, isInitializing } = useAuth();
   const router = useRouter();
-  const { showAlert } = useAlert();
+  const { showAlert, showConfirm } = useAlert();
   const [itineraries, setItineraries] = useState<Itinerary[]>([]);
   const [tab, setTab] = useState<'UPCOMING'|'PAST'>('UPCOMING');
+  const [openMenuId, setOpenMenuId] = useState<number | null>(null);
 
   useEffect(() => {
-    // 초기 로딩 완료 후에만 인증 체크 (로그아웃 시 이미 false인 상태에서 알림이 뜨는 것을 방지)
     if (!isInitializing && !isAuthenticated) {
       router.push('/login');
     }
     if (!isInitializing && isAuthenticated) {
       fetchItineraries();
     }
+
+    // 메뉴 팝업 외의 영역 클릭 시 닫기
+    const handleClickOutside = () => setOpenMenuId(null);
+    window.addEventListener('click', handleClickOutside);
+    return () => window.removeEventListener('click', handleClickOutside);
   }, [isInitializing, isAuthenticated]);
 
   const fetchItineraries = async () => {
     try {
       const url = `http://${typeof window !== 'undefined' ? window.location.hostname : 'localhost'}:8080/api/itineraries`;
       const res = await fetch(url, { credentials: 'include' });
-      if (res.status === 401) return; // 인증 만료/로그아웃 시 알림 없이 리다이렉트 대기
+      if (res.status === 401) return;
       if (res.ok) {
         setItineraries(await res.json());
       }
     } catch (e) {
       console.error(e);
     }
+  };
+
+  const deleteItinerary = (id: number) => {
+    showConfirm('이 일정을 정말 삭제하시겠습니까?', async () => {
+      try {
+        const url = `http://${typeof window !== 'undefined' ? window.location.hostname : 'localhost'}:8080/api/itineraries/${id}`;
+        const res = await fetch(url, {
+          method: 'DELETE',
+          credentials: 'include'
+        });
+        if (res.ok) {
+          showAlert('일정이 삭제되었습니다.');
+          fetchItineraries();
+        } else {
+          showAlert('삭제 실패!');
+        }
+      } catch (e) {
+        console.error(e);
+        showAlert('삭제 중 오류 발생');
+      }
+    });
   };
 
   if (isInitializing) return <div className="text-center mt-5">로딩 중...</div>;
@@ -80,9 +106,45 @@ export default function MyItineraryPage() {
        ) : (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '20px' }}>
              {displayList.map(it => (
-               <div key={it.id} className="card" style={{ padding: '1.5rem' }}>
-                 <h3 style={{ margin: '0 0 10px 0', color: 'var(--primary)' }}>{it.title}</h3>
-                 <p className="text-muted">🗓️ {it.startDate} ~ {it.endDate}</p>
+               <div key={it.id} className="card" style={{ padding: '1.5rem', position: 'relative' }}>
+                 {/* 햄버거 메뉴 버튼 */}
+                 <button
+                   onClick={(e) => {
+                     e.stopPropagation();
+                     setOpenMenuId(openMenuId === it.id ? null : it.id);
+                   }}
+                   style={{
+                     position: 'absolute', top: '15px', right: '15px',
+                     background: 'none', border: 'none', fontSize: '1.2rem', cursor: 'pointer', color: '#94a3b8'
+                   }}
+                 >
+                   ⋮
+                 </button>
+
+                 {/* 메뉴 드롭다운 */}
+                 {openMenuId === it.id && (
+                   <div style={{
+                     position: 'absolute', top: '40px', right: '15px',
+                     backgroundColor: '#fff', border: '1px solid #e2e8f0', borderRadius: '8px',
+                     boxShadow: '0 4px 12px rgba(0,0,0,0.1)', zIndex: 10, minWidth: '100px',
+                     overflow: 'hidden'
+                   }}>
+                     <button
+                       onClick={() => deleteItinerary(it.id)}
+                       style={{
+                         width: '100%', padding: '10px 15px', border: 'none', background: 'none',
+                         textAlign: 'left', cursor: 'pointer', color: '#ef4444', fontSize: '0.85rem'
+                       }}
+                     >
+                       🗑️ 일정 삭제
+                     </button>
+                   </div>
+                 )}
+
+                 <h3 style={{ margin: '0 0 10px 0', paddingRight: '20px', color: 'var(--primary)', wordBreak: 'keep-all' }}>
+                    {it.title}
+                 </h3>
+                 <p className="text-muted" style={{ fontSize: '0.9rem' }}>🗓️ {it.startDate} ~ {it.endDate}</p>
                  <button className="secondary mt-3 w-100" onClick={() => router.push(`/my-itinerary/${it.id}`)}>일정 상세 보기</button>
                </div>
              ))}
