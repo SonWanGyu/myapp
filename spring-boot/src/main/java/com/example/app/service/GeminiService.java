@@ -44,8 +44,9 @@ public class GeminiService {
         
         prompt.append("결과는 반드시 아래의 JSON 형식만 출력해야 합니다. 어떠한 부연 설명도 덧붙이지 마세요.\n");
         prompt.append("중요 지침:\n");
-        prompt.append("1. 각 장소의 위도(lat)와 경도(lng)는 소수점 4자리까지 정확하게 입력하세요.\n");
-        prompt.append("2. 'name'은 '한글명 (영어명)' 형식을 권장하며, 구글 맵에서 검색 가능한 정확한 명칭이어야 합니다.\n");
+        prompt.append("1. 각 장소의 위도(lat)와 경도(lng)는 정확한 실제 위치여야 합니다.\n");
+        prompt.append("2. 만약 정확한 좌표를 알 수 없다면 0을 넣지 말고 lat: null, lng: null로 필드를 비우세요.\n");
+        prompt.append("3. 'name'은 '한글명 (영어명)' 형식을 권장하며, 구글 맵에서 검색 가능한 정확한 명칭이어야 합니다.\n");
         prompt.append("{\n");
         prompt.append("  \"title\": \"여행 제목\",\n");
         prompt.append("  \"days\": [\n");

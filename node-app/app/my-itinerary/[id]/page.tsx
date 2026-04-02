@@ -36,11 +36,12 @@ function extractSearchName(name: string): string {
 
 function getMapSrc(p: Place, fallback: string) {
   const searchName = extractSearchName(p.name || fallback);
-  // 좌표가 있으면 좌표 + 이름(괄호) 조합으로 더 정확하게 핀을 찍음
-  if (p.lat && p.lng) {
-    return `https://maps.google.com/maps?q=${p.lat},${p.lng}+(${encodeURIComponent(searchName)})&z=16&ie=UTF8&iwloc=B&output=embed`;
+  // 좌표가 없거나 0이면 이름으로만 검색
+  if (!p.lat || !p.lng || p.lat === 0 || p.lng === 0) {
+    return `https://maps.google.com/maps?q=${encodeURIComponent(searchName)}&z=16&ie=UTF8&iwloc=B&output=embed`;
   }
-  return `https://maps.google.com/maps?q=${encodeURIComponent(searchName)}&z=16&ie=UTF8&iwloc=B&output=embed`;
+  // 좌표가 있더라도 이름과 함께 검색해야 핀이 더 정확함
+  return `https://maps.google.com/maps?q=${p.lat},${p.lng}+(${encodeURIComponent(searchName)})&z=16&ie=UTF8&iwloc=B&output=embed`;
 }
 
 export default function ItineraryDetailPage() {
@@ -69,6 +70,7 @@ export default function ItineraryDetailPage() {
     try {
       const url = `http://${window.location.hostname}:8080/api/itineraries/${id}`;
       const res = await fetch(url, { credentials: 'include' });
+      if (res.status === 401) return; // 인증 만료/로그아웃 시 알림 없이 리다이렉트 대기
       if (!res.ok) { showAlert('일정을 불러올 수 없습니다.'); router.push('/my-itinerary'); return; }
       const data: Itinerary = await res.json();
       setItinerary(data);

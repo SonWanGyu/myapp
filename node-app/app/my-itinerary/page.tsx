@@ -22,12 +22,11 @@ export default function MyItineraryPage() {
   const [tab, setTab] = useState<'UPCOMING'|'PAST'>('UPCOMING');
 
   useEffect(() => {
-    if (!isInitializing) {
-      if (!isAuthenticated) {
-        showAlert('로그인이 필요합니다.');
-        router.push('/login');
-        return;
-      }
+    // 초기 로딩 완료 후에만 인증 체크 (로그아웃 시 이미 false인 상태에서 알림이 뜨는 것을 방지)
+    if (!isInitializing && !isAuthenticated) {
+      router.push('/login');
+    }
+    if (!isInitializing && isAuthenticated) {
       fetchItineraries();
     }
   }, [isInitializing, isAuthenticated]);
@@ -36,6 +35,7 @@ export default function MyItineraryPage() {
     try {
       const url = `http://${typeof window !== 'undefined' ? window.location.hostname : 'localhost'}:8080/api/itineraries`;
       const res = await fetch(url, { credentials: 'include' });
+      if (res.status === 401) return; // 인증 만료/로그아웃 시 알림 없이 리다이렉트 대기
       if (res.ok) {
         setItineraries(await res.json());
       }
