@@ -548,59 +548,66 @@ export default function PlannerPage() {
                <p className="text-muted" style={{ margin: 0 }}>AI가 추천해 준 맞춤 일정으로 여행을 떠나보세요.</p>
              </div>
 
-              {/* 지도 및 장소 정보 카드 (구글 UI와 겹치지 않게 80px 아래로 배치) */}
-              <div style={{ position: 'relative', borderRadius: '16px', overflow: 'hidden', marginBottom: '1.5rem', boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}>
+              {/* 지도 영역 */}
+              <div style={{ borderRadius: '16px', overflow: 'hidden', marginBottom: '1.2rem', boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}>
                 {(() => {
                   const mp = activeDay.places.find(p => p.name === selectedPlace) || activeDay.places[0];
                   const src = mp ? getMapSrc(mp, result.title) : `https://maps.google.com/maps?q=${encodeURIComponent(result.title)}&z=13&output=embed`;
-                  return (
-                    <>
-                      <iframe width="100%" height="300" style={{ border: 0, display: 'block' }} loading="lazy" allowFullScreen src={src} />
-                      
-                      {/* 장소 정보 카드 (장소 소개) - 구글 정보창(왼쪽 상단 300px) 바로 옆에 배치 */}
-                      <div style={{ position: 'absolute', top: '15px', left: '310px', zIndex: 10, display: 'flex', flexDirection: 'column', gap: '8px', width: '260px' }}>
-                        {selectedPlace && mp && (
-                          <div className="animate-fade-in" style={{
-                            backgroundColor: 'rgba(255,255,255,0.95)', borderRadius: '10px', padding: '10px 14px',
-                            boxShadow: '0 4px 12px rgba(0,0,0,0.1)', border: '1px solid rgba(226,232,240,0.8)',
-                            backdropFilter: 'blur(4px)'
-                          }}>
-                            <strong style={{ display: 'block', color: '#111827', fontSize: '0.85rem', marginBottom: '3px' }}>{selectedPlace}</strong>
-                            <span style={{ color: '#4b5563', fontSize: '0.75rem', lineHeight: 1.4, display: 'block' }}>
-                              {mp.description}
-                            </span>
-                          </div>
-                        )}
-                      </div>
-                    </>
-                  );
+                  return <iframe width="100%" height="350" style={{ border: 0, display: 'block' }} loading="lazy" allowFullScreen src={src} />;
                 })()}
               </div>
 
-             {/* Day 탭 */}
-             <div style={{ display: 'flex', gap: '8px', marginBottom: '1.5rem', overflowX: 'auto', paddingBottom: '4px' }}>
-               {result.days.map((d, i) => (
-                 <button
-                   key={i}
-                   onClick={() => { setSelectedDayIdx(i); setSelectedPlace(''); }}
-                   style={{
-                     padding: '8px 20px',
-                     borderRadius: '20px',
-                     border: selectedDayIdx === i ? '2px solid var(--primary)' : '1px solid #e2e8f0',
-                     backgroundColor: selectedDayIdx === i ? 'var(--primary)' : '#fff',
-                     color: selectedDayIdx === i ? '#fff' : '#64748b',
-                     fontWeight: selectedDayIdx === i ? '700' : '500',
-                     cursor: 'pointer',
-                     fontSize: '0.9rem',
-                     whiteSpace: 'nowrap',
-                     transition: 'all 0.2s',
-                     flexShrink: 0,
-                   }}
-                 >
-                   {d.day}
-                 </button>
-               ))}
-             </div>
+              {/* 하단 상세 정보 영역 (스크린샷 스타일 반영) */}
+              <div style={{ backgroundColor: '#f8fafc', padding: '1.2rem', borderRadius: '16px', border: '1px solid #e2e8f0' }}>
+                {/* Day 탭 */}
+                <div style={{ display: 'flex', gap: '8px', marginBottom: '1rem', overflowX: 'auto', paddingBottom: '4px' }}>
+                  {result.days.map((d, i) => (
+                    <button
+                      key={i}
+                      onClick={() => { setSelectedDayIdx(i); setSelectedPlace(''); }}
+                      style={{
+                        padding: '7px 18px', borderRadius: '50px', fontSize: '0.82rem', fontWeight: '600',
+                        border: selectedDayIdx === i ? 'none' : '1px solid #e2e8f0', cursor: 'pointer', whiteSpace: 'nowrap',
+                        backgroundColor: selectedDayIdx === i ? 'var(--primary)' : '#fff',
+                        color: selectedDayIdx === i ? '#fff' : '#64748b',
+                        boxShadow: selectedDayIdx === i ? '0 3px 8px rgba(99,102,241,0.3)' : 'none',
+                        transition: 'all 0.2s',
+                        flexShrink: 0
+                      }}
+                    >
+                      {d.day}
+                    </button>
+                  ))}
+                </div>
+
+                {/* 선택된 장소 상세 정보 카드 */}
+                {(() => {
+                  const mp = activeDay.places.find(p => p.name === selectedPlace) || activeDay.places[0];
+                  if (!mp) return null;
+                  return (
+                    <div className="animate-fade-in" style={{
+                      backgroundColor: '#fff', borderRadius: '16px', padding: '1rem 1.2rem',
+                      boxShadow: '0 4px 15px rgba(0,0,0,0.05)', border: '1px solid #edf2f7',
+                      display: 'flex', alignItems: 'center', gap: '15px'
+                    }}>
+                      <div style={{
+                        width: '42px', height: '42px', borderRadius: '12px', backgroundColor: '#eff6ff',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0
+                      }}>
+                        <span style={{ fontSize: '1.4rem' }}>📍</span>
+                      </div>
+                      <div style={{ flex: 1 }}>
+                        <strong style={{ display: 'block', color: '#1e293b', fontSize: '1rem', marginBottom: '3px' }}>
+                          {mp.name}
+                        </strong>
+                        <p style={{ color: '#64748b', fontSize: '0.8rem', margin: 0, lineHeight: 1.5, wordBreak: 'keep-all' }}>
+                          {mp.description}
+                        </p>
+                      </div>
+                    </div>
+                  );
+                })()}
+              </div>
 
              {/* 타임라인 장소 카드 */}
              <div style={{ position: 'relative', paddingLeft: '40px' }}>

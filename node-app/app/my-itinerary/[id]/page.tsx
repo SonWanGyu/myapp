@@ -226,56 +226,65 @@ export default function ItineraryDetailPage() {
         </div>
       </div>
 
-      {/* 오른쪽 패널 - 지도 */}
-      <div style={{ flex: 1, position: 'relative' }}>
-        <iframe
-          key={selectedPlace}
-          width="100%"
-          height="100%"
-          style={{ border: 0, display: 'block' }}
-          loading="lazy"
-          allowFullScreen
-          src={selectedP ? getMapSrc(selectedP, itinerary.title) : `https://maps.google.com/maps?q=${encodeURIComponent(itinerary.title)}&z=13&output=embed`}
-        />
-
-        {/* 장소 정보 카드 (구글 정보창 바로 옆에 배치) */}
-        <div style={{ position: 'absolute', top: '15px', left: '310px', zIndex: 10, display: 'flex', flexDirection: 'column', gap: '8px', width: '280px' }}>
-          {selectedPlace && (
-            <div className="animate-fade-in" style={{
-              backgroundColor: 'rgba(255,255,255,0.95)', borderRadius: '12px', padding: '12px 16px',
-              boxShadow: '0 4px 16px rgba(0,0,0,0.1)', border: '1px solid rgba(226,232,240,0.8)',
-              backdropFilter: 'blur(4px)'
-            }}>
-              <strong style={{ display: 'block', color: '#101827', fontSize: '0.9rem', marginBottom: '4px' }}>{selectedPlace}</strong>
-              <span style={{ color: '#4b5563', fontSize: '0.78rem', lineHeight: 1.4, display: 'block', wordBreak: 'keep-all' }}>
-                {activeDay.places.find(p => p.name === selectedPlace)?.description || ''}
-              </span>
-            </div>
-          )}
+      {/* 오른쪽 패널 - 지도 + 정보 바 */}
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', backgroundColor: '#f8fafc' }}>
+        <div style={{ flex: 1, position: 'relative' }}>
+          <iframe
+            key={selectedPlace}
+            width="100%"
+            height="100%"
+            style={{ border: 0, display: 'block' }}
+            loading="lazy"
+            allowFullScreen
+            src={selectedP ? getMapSrc(selectedP, itinerary.title) : `https://maps.google.com/maps?q=${encodeURIComponent(itinerary.title)}&z=13&output=embed`}
+          />
         </div>
 
-        {/* 하단 오버레이 (Day 탭 유지) */}
-        <div style={{
-          position: 'absolute', bottom: 0, left: 0, right: 0,
-          background: 'linear-gradient(transparent, rgba(255,255,255,0.95) 40%)',
-          padding: '40px 20px 16px 20px',
-        }}>
-          <div style={{ display: 'flex', gap: '6px', marginBottom: '0px', overflowX: 'auto' }}>
+        {/* 하단 상세 정보 영역 (스크린샷 스타일 반영) */}
+        <div style={{ padding: '1.2rem', borderTop: '1px solid #e2e8f0', boxShadow: '0 -2px 10px rgba(0,0,0,0.02)' }}>
+          {/* Day 탭 */}
+          <div style={{ display: 'flex', gap: '8px', marginBottom: '1rem', overflowX: 'auto', paddingBottom: '4px' }}>
             {schedule.days.map((d, i) => (
               <button
                 key={i}
                 onClick={() => { setSelectedDayIdx(i); setSelectedPlace(schedule.days[i].places[0]?.name || ''); }}
                 style={{
-                  padding: '6px 16px', borderRadius: '14px', fontSize: '0.78rem', fontWeight: '600',
-                  border: 'none', cursor: 'pointer', whiteSpace: 'nowrap',
-                  backgroundColor: selectedDayIdx === i ? 'var(--primary)' : 'rgba(241,245,249,0.9)',
+                  padding: '7px 18px', borderRadius: '50px', fontSize: '0.8rem', fontWeight: '600',
+                  border: selectedDayIdx === i ? 'none' : '1px solid #e2e8f0', cursor: 'pointer', whiteSpace: 'nowrap',
+                  backgroundColor: selectedDayIdx === i ? 'var(--primary)' : '#fff',
                   color: selectedDayIdx === i ? '#fff' : '#64748b',
+                  boxShadow: selectedDayIdx === i ? '0 3px 8px rgba(99,102,241,0.3)' : 'none',
+                  transition: 'all 0.2s'
                 }}
               >
                 {d.day}
               </button>
             ))}
           </div>
+
+          {/* 선택된 장소 정보 카드 */}
+          {selectedPlace && (
+            <div className="animate-fade-in" style={{
+              backgroundColor: '#fff', borderRadius: '16px', padding: '1rem 1.2rem',
+              boxShadow: '0 4px 15px rgba(0,0,0,0.05)', border: '1px solid #edf2f7',
+              display: 'flex', alignItems: 'center', gap: '15px'
+            }}>
+              <div style={{
+                width: '40px', height: '40px', borderRadius: '12px', backgroundColor: '#eff6ff',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0
+              }}>
+                <span style={{ fontSize: '1.3rem' }}>📍</span>
+              </div>
+              <div style={{ flex: 1 }}>
+                <strong style={{ display: 'block', color: '#1e293b', fontSize: '0.98rem', marginBottom: '4px' }}>
+                  {selectedPlace}
+                </strong>
+                <p style={{ color: '#64748b', fontSize: '0.82rem', margin: 0, lineHeight: 1.5, wordBreak: 'keep-all' }}>
+                  {activeDay.places.find(p => p.name === selectedPlace)?.description}
+                </p>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>
