@@ -52,9 +52,9 @@ function extractCityHint(title: string): string {
 function getMapSrc(p: Place, fallback: string) {
   const searchName = extractSearchName(p.name);
   const cityHint = extractCityHint(fallback);
+  // 검색어에 국가(Japan)까지 포함하여 검색 정확도를 극대화하고 정보창이 잘 열리게 합니다.
   const query = encodeURIComponent(`${searchName} ${cityHint}`.trim());
   
-  // iwloc=addr 옵션을 사용하여 정보창(InfoWindow)이 기본적으로 열려있도록 유도합니다.
   return `https://maps.google.com/maps?q=${query}&z=15&ie=UTF8&iwloc=addr&output=embed`;
 }
 
@@ -557,8 +557,8 @@ export default function PlannerPage() {
                     <>
                       <iframe width="100%" height="300" style={{ border: 0, display: 'block' }} loading="lazy" allowFullScreen src={src} />
                       
-                      {/* 지도 좌측 상단 장소 정보 카드 (구글 기본 UI와 겹치지 않게 110px 아래로 배치) */}
-                      <div style={{ position: 'absolute', top: '110px', left: '15px', zIndex: 10, display: 'flex', flexDirection: 'column', gap: '8px', width: '260px' }}>
+                      {/* 장소 정보 카드 (장소 소개) - 구글 정보창(왼쪽 상단)과 겹치지 않게 '오른쪽 상단'에 배치 */}
+                      <div style={{ position: 'absolute', top: '15px', right: '15px', zIndex: 10, display: 'flex', flexDirection: 'column', gap: '8px', width: '260px' }}>
                         {selectedPlace && mp && (
                           <div className="animate-fade-in" style={{
                             backgroundColor: 'rgba(255,255,255,0.95)', borderRadius: '10px', padding: '10px 14px',
