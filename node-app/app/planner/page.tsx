@@ -557,8 +557,8 @@ export default function PlannerPage() {
                     <>
                       <iframe width="100%" height="300" style={{ border: 0, display: 'block' }} loading="lazy" allowFullScreen src={src} />
                       
-                      {/* 지도 좌측 상단 장소 정보 카드 (top: 15px) */}
-                      <div style={{ position: 'absolute', top: '15px', left: '15px', zIndex: 10, display: 'flex', flexDirection: 'column', gap: '8px', width: '260px' }}>
+                      {/* 지도 좌측 상단 장소 정보 카드 (구글 기본 UI와 겹치지 않게 110px 아래로 배치) */}
+                      <div style={{ position: 'absolute', top: '110px', left: '15px', zIndex: 10, display: 'flex', flexDirection: 'column', gap: '8px', width: '260px' }}>
                         {selectedPlace && mp && (
                           <div className="animate-fade-in" style={{
                             backgroundColor: 'rgba(255,255,255,0.95)', borderRadius: '10px', padding: '10px 14px',

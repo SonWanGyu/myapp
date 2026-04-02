@@ -238,8 +238,8 @@ export default function ItineraryDetailPage() {
           src={selectedP ? getMapSrc(selectedP, itinerary.title) : `https://maps.google.com/maps?q=${encodeURIComponent(itinerary.title)}&z=13&output=embed`}
         />
 
-        {/* 장소 정보 카드 (버튼 제거 후 상단 배치) */}
-        <div style={{ position: 'absolute', top: '15px', left: '15px', zIndex: 10, display: 'flex', flexDirection: 'column', gap: '8px', width: '280px' }}>
+        {/* 장소 정보 카드 (구글 기본 UI와 겹치지 않게 110px 아래로 배치) */}
+        <div style={{ position: 'absolute', top: '110px', left: '15px', zIndex: 10, display: 'flex', flexDirection: 'column', gap: '8px', width: '280px' }}>
           {selectedPlace && (
             <div className="animate-fade-in" style={{
               backgroundColor: 'rgba(255,255,255,0.95)', borderRadius: '12px', padding: '12px 16px',
