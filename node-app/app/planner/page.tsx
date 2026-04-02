@@ -45,21 +45,18 @@ function extractSearchName(name: string): string {
 
 function getMapSrc(p: Place, fallback: string) {
   const searchName = extractSearchName(p.name || fallback);
-  
-  // 구글 맵 임베드는 좌표(lat,lng)보다 정식 명칭(Name)으로 검색할 때 훨씬 정확하게 핀을 찍습니다.
-  // 특히 AI가 생성한 좌표가 미세하게 틀릴 경우 바다(파란색)가 보일 수 있으므로, 
-  // 명칭 검색을 기본으로 하고 좌표는 아주 보조적인 수단으로만 한정합니다.
-  
   let query = encodeURIComponent(searchName);
   
-  // 좌표가 존재하고 정상 범위 내에 있다면, 중심점 힌트(ll)로 활용하거나 명칭 뒤에 붙여서 보강합니다.
-  if (p.lat && p.lng && Math.abs(p.lat) <= 90 && Math.abs(p.lng) <= 180 && p.lat !== 0) {
-    // @ 기호를 사용하여 명칭과 좌표를 결합하면 구글 맵이 명칭을 우선으로 하되 해당 좌표 근처를 찾습니다.
+  // 구글 맵 임베드는 좌표보다 명칭 검색이 훨씬 정확합니다.
+  if (p.lat && p.lng && p.lat !== 0) {
     return `https://maps.google.com/maps?q=${query}@${p.lat},${p.lng}&z=16&ie=UTF8&output=embed`;
   }
-
-  // 좌표가 없는 경우에는 명칭으로만 검색 (가장 안전한 방법)
   return `https://maps.google.com/maps?q=${query}&z=16&ie=UTF8&output=embed`;
+}
+
+function getGoogleMapsSearchLink(p: Place, fallback: string) {
+  const searchName = extractSearchName(p.name || fallback);
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(searchName)}`;
 }
 
 export default function PlannerPage() {

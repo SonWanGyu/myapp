@@ -36,20 +36,20 @@ function extractSearchName(name: string): string {
 
 function getMapSrc(p: Place, fallback: string) {
   const searchName = extractSearchName(p.name || fallback);
-  
-  // 구글 맵 임베드는 좌표(lat,lng)보다 정식 명칭(Name)으로 검색할 때 훨씬 정확하게 핀을 찍습니다.
-  // 특히 AI가 생성한 좌표가 미세하게 틀릴 경우 바다(파란색)가 보일 수 있으므로, 
-  // 명칭 검색을 기본으로 하고 좌표는 아주 보조적인 수단으로만 한정합니다.
-  
   let query = encodeURIComponent(searchName);
   
-  // 좌표가 존재하고 정상 범위 내에 있다면, @ 기호를 사용하여 명칭과 좌표를 결합합니다.
-  if (p.lat && p.lng && Math.abs(p.lat) <= 90 && Math.abs(p.lng) <= 180 && p.lat !== 0) {
+  // 구글 맵 임베드는 좌표보다 명칭 검색이 훨씬 정확합니다. 
+  // 좌표는 오차가 있을 수 있으므로 이름으로 검색하되, 좌표가 있다면 정확한 위치 힌트(@좌표)로만 사용합니다.
+  if (p.lat && p.lng && p.lat !== 0) {
     return `https://maps.google.com/maps?q=${query}@${p.lat},${p.lng}&z=16&ie=UTF8&output=embed`;
   }
-
-  // 좌표가 없는 경우에는 명칭으로만 검색 (가장 안전한 방법)
   return `https://maps.google.com/maps?q=${query}&z=16&ie=UTF8&output=embed`;
+}
+
+// 구글 맵 외부 링크 생성 (좌표가 아닌 이름 기반 검색으로 파라미터 오류 해결)
+function getGoogleMapsSearchLink(p: Place, fallback: string) {
+  const searchName = extractSearchName(p.name || fallback);
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(searchName)}`;
 }
 
 export default function ItineraryDetailPage() {
@@ -234,6 +234,23 @@ export default function ItineraryDetailPage() {
           allowFullScreen
           src={selectedP ? getMapSrc(selectedP, itinerary.title) : `https://maps.google.com/maps?q=${encodeURIComponent(itinerary.title)}&z=13&output=embed`}
         />
+
+        {/* 지도에서 열기 버튼 (좌표 오류 해결 버전) */}
+        <div style={{ position: 'absolute', top: '15px', left: '15px', zIndex: 10 }}>
+          <a
+            href={selectedP ? getGoogleMapsSearchLink(selectedP, itinerary.title) : '#'}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              backgroundColor: '#fff', padding: '8px 14px', borderRadius: '8px', 
+              boxShadow: '0 2px 10px rgba(0,0,0,0.15)', textDecoration: 'none',
+              color: '#1e293b', fontSize: '0.8rem', fontWeight: '600',
+              display: 'flex', alignItems: 'center', gap: '6px', border: '1px solid #e2e8f0'
+            }}
+          >
+            지도에서 열기 ↗
+          </a>
+        </div>
 
         {/* 하단 오버레이 */}
         <div style={{
