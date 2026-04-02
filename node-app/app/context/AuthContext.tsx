@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
 import { useRouter } from 'next/navigation';
 import { User, AuthContextType } from '../types';
 
@@ -18,11 +18,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   const USER_API_URL = `http://${typeof window !== 'undefined' ? window.location.hostname : 'localhost'}:8080/api/users`;
 
-  useEffect(() => {
-    checkAuth();
-  }, []);
-
-  const checkAuth = async (): Promise<void> => {
+  const checkAuth = useCallback(async (): Promise<void> => {
     try {
       const res = await fetch(`${USER_API_URL}/me`, {
         method: 'GET',
@@ -38,7 +34,11 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     } finally {
       setIsInitializing(false);
     }
-  };
+  }, [USER_API_URL]);
+
+  useEffect(() => {
+    checkAuth();
+  }, [checkAuth]);
 
   const login = (user: User): void => {
     setCurrentUser(user);

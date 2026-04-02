@@ -25,3 +25,29 @@ export interface AuthContextType {
   login: (user: User) => void;
   logout: () => Promise<void>;
 }
+
+// 일정 및 장소 타입
+export interface Place {
+  name: string;
+  description: string;
+  lat?: number;
+  lng?: number;
+}
+
+export interface PlanDay {
+  day: string;
+  places: Place[];
+}
+
+export interface PlanResult {
+  title: string;
+  days: PlanDay[];
+}
+
+export interface Itinerary {
+  id: number;
+  title: string;
+  startDate: string;
+  endDate: string;
+  scheduleJson: string;
+}

@@ -29,8 +29,8 @@ public class AppApplication {
     public WebMvcConfigurer corsConfigurer() {
         return new WebMvcConfigurer() {
             @Override
-            public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/**").allowedOrigins("*").allowedMethods("*");
+            public void addCorsMappings(@org.springframework.lang.NonNull CorsRegistry registry) {
+                registry.addMapping("/**").allowedOriginPatterns("*").allowedMethods("*").allowCredentials(true);
             }
         };
     }

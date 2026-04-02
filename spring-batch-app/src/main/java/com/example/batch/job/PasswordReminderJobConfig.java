@@ -30,18 +30,29 @@ public class PasswordReminderJobConfig implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        JobParameters params = new JobParametersBuilder()
-                .addString("JobID", String.valueOf(System.currentTimeMillis()))
-                .toJobParameters();
-        jobLauncher.run(passwordReminderJob(), params);
+        String jobID = String.valueOf(System.currentTimeMillis());
+        if (jobID != null) {
+            JobParameters params = new JobParametersBuilder()
+                    .addString("JobID", jobID)
+                    .toJobParameters();
+            
+            Job job = passwordReminderJob();
+            if (job != null) {
+                jobLauncher.run(job, params);
+            }
+        }
     }
 
     @Bean
     public Job passwordReminderJob() {
-        return jobBuilderFactory.get("passwordReminderJob")
-                .incrementer(new RunIdIncrementer())
-                .start(passwordReminderStep())
-                .build();
+        Step step = passwordReminderStep();
+        if (step != null) {
+            return jobBuilderFactory.get("passwordReminderJob")
+                    .incrementer(new RunIdIncrementer())
+                    .start(step)
+                    .build();
+        }
+        return null;
     }
 
     @Bean

@@ -81,7 +81,9 @@ public class GeminiService {
         HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestBody, headers);
 
         try {
-            Map<String, Object> response = restTemplate.postForObject(apiUrl, entity, Map.class);
+            org.springframework.core.ParameterizedTypeReference<Map<String, Object>> responseType = 
+                new org.springframework.core.ParameterizedTypeReference<Map<String, Object>>() {};
+            Map<String, Object> response = restTemplate.exchange(apiUrl, org.springframework.http.HttpMethod.POST, entity, responseType).getBody();
             if (response != null && response.containsKey("candidates")) {
                 List<Map<String, Object>> candidates = (List<Map<String, Object>>) response.get("candidates");
                 if (!candidates.isEmpty()) {

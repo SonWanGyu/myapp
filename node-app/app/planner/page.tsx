@@ -1,27 +1,11 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Fragment } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '../context/AuthContext';
 import { CONTINENTS, TRAVEL_DESTINATIONS, TravelDestination } from '../lib/travelData';
 import { useAlert } from '../context/AlertContext';
-
-interface Place {
-  name: string;
-  description: string;
-  lat?: number;
-  lng?: number;
-}
-
-interface PlanDay {
-  day: string;
-  places: Place[];
-}
-
-interface PlanResult {
-  title: string;
-  days: PlanDay[];
-}
+import { Place, PlanDay, PlanResult } from '../types';
 
 // 두 좌표 간 거리 계산 (km)
 function calcDistance(lat1?: number, lng1?: number, lat2?: number, lng2?: number): string {
@@ -65,7 +49,7 @@ function getGoogleMapsSearchLink(p: Place, fallback: string) {
 }
 
 export default function PlannerPage() {
-  const { isAuthenticated, currentUser } = useAuth();
+  const { isAuthenticated } = useAuth();
   const router = useRouter();
 
   const { showAlert, showConfirm } = useAlert();
@@ -125,7 +109,7 @@ export default function PlannerPage() {
         performAutoSave();
       }
     }
-  }, [isAuthenticated, router]);
+  }, [isAuthenticated, router, showAlert]);
 
   const resetFromStep = (targetStep: number) => {
     if (targetStep <= 1) {

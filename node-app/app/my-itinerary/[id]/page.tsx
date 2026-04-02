@@ -1,17 +1,10 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useAuth } from '../../context/AuthContext';
 import { useAlert } from '../../context/AlertContext';
-
-interface Place { name: string; description: string; lat?: number; lng?: number; }
-interface PlanDay { day: string; places: Place[]; }
-interface PlanResult { title: string; days: PlanDay[]; }
-interface Itinerary {
-  id: number; title: string; startDate: string; endDate: string;
-  scheduleJson: string;
-}
+import { Place, PlanDay, PlanResult, Itinerary } from '../../types';
 
 function calcDistance(lat1?: number, lng1?: number, lat2?: number, lng2?: number): string {
   if (!lat1 || !lng1 || !lat2 || !lng2) return '';
@@ -28,7 +21,6 @@ function calcDistance(lat1?: number, lng1?: number, lat2?: number, lng2?: number
 
 // 장소명에서 영어명(괄호 안)을 추출하여 더 정확한 검색 수행
 function extractSearchName(name: string): string {
-  // "한글명 (English Name)" 패턴에서 영어명 추출
   const match = name.match(/\(([^)]+)\)/);
   if (match) return match[1].trim();
   return name;
@@ -44,15 +36,7 @@ function getMapSrc(p: Place, fallback: string) {
   const searchName = extractSearchName(p.name);
   const cityHint = extractCityHint(fallback);
   const query = encodeURIComponent(`${searchName} ${cityHint}`.trim());
-  
-  // iwloc=A 를 사용하여 정보창이 더욱 강력하게 열려있도록 설정합니다.
   return `https://maps.google.com/maps?q=${query}&z=15&ie=UTF8&iwloc=A&output=embed`;
-}
-
-function getGoogleMapsSearchLink(p: Place, fallback: string) {
-  const searchName = extractSearchName(p.name);
-  const cityHint = extractCityHint(fallback);
-  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${searchName} ${cityHint}`.trim())}`;
 }
 
 export default function ItineraryDetailPage() {
@@ -67,21 +51,12 @@ export default function ItineraryDetailPage() {
   const [selectedDayIdx, setSelectedDayIdx] = useState(0);
   const [selectedPlace, setSelectedPlace] = useState('');
 
-  useEffect(() => {
-    // 초기 로딩 완료 후에만 인증 체크 (로그아웃 시 이미 false인 상태에서 알림이 뜨는 것을 방지)
-    if (!isInitializing && !isAuthenticated) {
-      router.push('/login');
-    }
-    if (!isInitializing && isAuthenticated) {
-      fetchItinerary();
-    }
-  }, [isInitializing, isAuthenticated]);
-
-  const fetchItinerary = async () => {
+  const fetchItinerary = useCallback(async () => {
+    if (!id) return;
     try {
       const url = `http://${window.location.hostname}:8080/api/itineraries/${id}`;
       const res = await fetch(url, { credentials: 'include' });
-      if (res.status === 401) return; // 인증 만료/로그아웃 시 알림 없이 리다이렉트 대기
+      if (res.status === 401) return;
       if (!res.ok) { showAlert('일정을 불러올 수 없습니다.'); router.push('/my-itinerary'); return; }
       const data: Itinerary = await res.json();
       setItinerary(data);
@@ -94,7 +69,16 @@ export default function ItineraryDetailPage() {
       console.error(e);
       showAlert('데이터를 불러오는 중 오류가 발생했습니다.');
     }
-  };
+  }, [id, router, showAlert]);
+
+  useEffect(() => {
+    if (!isInitializing && !isAuthenticated) {
+      router.push('/login');
+    }
+    if (!isInitializing && isAuthenticated) {
+      fetchItinerary();
+    }
+  }, [isInitializing, isAuthenticated, fetchItinerary, router]);
 
   if (isInitializing || !itinerary || !schedule) {
     return (

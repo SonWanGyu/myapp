@@ -3,11 +3,9 @@ package com.example.app.controller;
 import com.example.app.dto.AiPlannerRequest;
 import com.example.app.dto.AiPlannerResponse;
 import com.example.app.service.GeminiService;
-import com.example.app.security.JwtUtil;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
 @RestController
@@ -15,11 +13,9 @@ import javax.servlet.http.HttpServletRequest;
 public class AiPlannerController {
 
     private final GeminiService geminiService;
-    private final JwtUtil jwtUtil;
 
-    public AiPlannerController(GeminiService geminiService, JwtUtil jwtUtil) {
+    public AiPlannerController(GeminiService geminiService) {
         this.geminiService = geminiService;
-        this.jwtUtil = jwtUtil;
     }
 
     @PostMapping("/generate")

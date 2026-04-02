@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useRouter } from 'next/navigation';
 import { useAlert } from '../context/AlertContext';
@@ -22,6 +22,19 @@ export default function MyItineraryPage() {
   const [tab, setTab] = useState<'UPCOMING'|'PAST'>('UPCOMING');
   const [openMenuId, setOpenMenuId] = useState<number | null>(null);
 
+  const fetchItineraries = useCallback(async () => {
+    try {
+      const url = `http://${typeof window !== 'undefined' ? window.location.hostname : 'localhost'}:8080/api/itineraries`;
+      const res = await fetch(url, { credentials: 'include' });
+      if (res.status === 401) return;
+      if (res.ok) {
+        setItineraries(await res.json());
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  }, []);
+
   useEffect(() => {
     if (!isInitializing && !isAuthenticated) {
       router.push('/login');
@@ -34,20 +47,7 @@ export default function MyItineraryPage() {
     const handleClickOutside = () => setOpenMenuId(null);
     window.addEventListener('click', handleClickOutside);
     return () => window.removeEventListener('click', handleClickOutside);
-  }, [isInitializing, isAuthenticated]);
-
-  const fetchItineraries = async () => {
-    try {
-      const url = `http://${typeof window !== 'undefined' ? window.location.hostname : 'localhost'}:8080/api/itineraries`;
-      const res = await fetch(url, { credentials: 'include' });
-      if (res.status === 401) return;
-      if (res.ok) {
-        setItineraries(await res.json());
-      }
-    } catch (e) {
-      console.error(e);
-    }
-  };
+  }, [isInitializing, isAuthenticated, fetchItineraries, router]);
 
   const deleteItinerary = (id: number) => {
     showConfirm('이 일정을 정말 삭제하시겠습니까?', async () => {

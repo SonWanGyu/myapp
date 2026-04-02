@@ -37,6 +37,7 @@ public class UserController {
 
     @GetMapping("/{id}")
     public ResponseEntity<User> getUserById(@PathVariable Long id) {
+        if (id == null) return ResponseEntity.badRequest().build();
         return userRepository.findById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
@@ -44,6 +45,7 @@ public class UserController {
 
     @PostMapping
     public User createUser(@RequestBody User user) {
+        if (user == null) return null;
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         if ("thsdhksrb@gmail.com".equalsIgnoreCase(user.getEmail())) {
             user.setRole("ADMIN");
@@ -58,6 +60,7 @@ public class UserController {
     
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody User loginUser, HttpServletResponse response) {
+        if (loginUser == null || loginUser.getEmail() == null) return ResponseEntity.badRequest().body("Invalid request");
         return userRepository.findByEmail(loginUser.getEmail())
                 .filter(u -> !"DELETED".equals(u.getStatus()))
                 .map(user -> {
@@ -110,6 +113,7 @@ public class UserController {
 
     @PutMapping("/{id}")
     public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User userDetails) {
+        if (id == null || userDetails == null) return ResponseEntity.badRequest().build();
         return userRepository.findById(id)
                 .map(user -> {
                     user.setName(userDetails.getName());
@@ -121,6 +125,7 @@ public class UserController {
 
     @PutMapping("/me")
     public ResponseEntity<User> updateMyProfile(HttpServletRequest request, @RequestBody User userDetails) {
+        if (userDetails == null) return ResponseEntity.badRequest().build();
         String jwt = null;
         Cookie[] cookies = request.getCookies();
         if (cookies != null) {
@@ -142,6 +147,7 @@ public class UserController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
+        if (id == null) return ResponseEntity.badRequest().build();
         return userRepository.findById(id).map(user -> {
             user.setStatus("DELETED");
             userRepository.save(user);
@@ -151,6 +157,7 @@ public class UserController {
 
     @PutMapping("/{id}/restore")
     public ResponseEntity<Void> restoreUser(@PathVariable Long id) {
+        if (id == null) return ResponseEntity.badRequest().build();
         return userRepository.findById(id).map(user -> {
             user.setStatus("ACTIVE");
             userRepository.save(user);
@@ -182,6 +189,7 @@ public class UserController {
 
     @PostMapping("/password")
     public ResponseEntity<?> changePassword(HttpServletRequest request, @RequestBody Map<String, String> payload) {
+        if (payload == null) return ResponseEntity.badRequest().build();
         String jwt = null;
         Cookie[] cookies = request.getCookies();
         if (cookies != null) {
