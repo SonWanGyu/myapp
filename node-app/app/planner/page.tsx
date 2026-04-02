@@ -128,7 +128,9 @@ export default function PlannerPage() {
       setTravelStyles([]);
       setTempo(null);
     }
-    setResult(null);
+    if (targetStep <= 9) {
+       setResult(null);
+    }
     setStep(targetStep);
   };
 
@@ -140,17 +142,13 @@ export default function PlannerPage() {
     }
 
     setLoading(true);
-    setStep(9); // Loading / Result view
+    setStep(10); // 결과 및 로딩 단계(Step 10)로 이동
+    setResult(null);
     
-    const payloadCountries = mode === 'AUTO' 
-        ? (autoCountry ? [autoCountry] : [autoLocation]) 
-        : selectedCountries;
-
-    // API 호출
     const payload = {
       mode,
-      countries: payloadCountries,
-      cities: mode === 'AUTO' ? [] : selectedCities,
+      countries: mode === 'AUTO' ? [autoCountry] : selectedCountries,
+      cities: selectedCities,
       startDate,
       endDate,
       headCount: headcount,
@@ -188,12 +186,12 @@ export default function PlannerPage() {
       } catch (parseEr) {
         console.error(parseEr);
         showAlert('AI가 비정상적인 데이터를 반환했습니다.');
-        setStep(8);
+        setStep(9);
       }
     } catch (err) {
       console.error(err);
       showAlert(`일정 생성 중 오류가 발생했습니다.\n상세: ${(err as Error).message}`);
-      setStep(8);
+      setStep(9); // 오류 시 다시 선택 단계(Step 9)로 복귀
     } finally {
       setLoading(false);
     }
@@ -261,7 +259,7 @@ export default function PlannerPage() {
     <div className="container animate-fade-in">
       <h2 className="page-title center mb-4">✨ AI 일정 만들기</h2>
       
-      {step < 9 && (
+      {step < 10 && (
         <div style={{ display: 'flex', gap: '10px', marginBottom: '20px', overflowX: 'auto', paddingBottom: '10px' }}>
           {[1,2,3,4,5,6,7,8,9].map(s => {
             // mode='AUTO' 일 때 3, 4 스킵
@@ -529,18 +527,19 @@ export default function PlannerPage() {
           </div>
         )}
 
-        {step === 9 && loading && (
-          <div className="text-center p-3">
-             <h2>🤖 AI가 일정을 짜고 있어요...</h2>
+        {step === 10 && loading && (
+          <div className="text-center p-5 animate-pulse">
+             <div style={{ fontSize: '4rem', marginBottom: '1rem' }}>🤖</div>
+             <h2>AI가 일정의 밀도를 조절하고 있어요...</h2>
              <p className="text-muted">보통 10~20초 정도 소요됩니다. 조금만 기다려주세요!</p>
           </div>
         )}
 
-        {step === 9 && !loading && result && (() => {
+        {step === 10 && !loading && result && (() => {
           const activeDay = result.days[selectedDayIdx] || result.days[0];
           return (
-           <div>
-             {/* 헤더 - 여행 타이틀 */}
+            <div className="animate-fade-in">
+              {/* 헤더 - 여행 타이틀 */}
              <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
                <div style={{ fontSize: '3rem', marginBottom: '0.5rem' }}>🌍</div>
                <h2 style={{ color: '#1e293b', margin: '0 0 0.3rem 0', fontSize: '1.6rem' }}>{result.title}</h2>
