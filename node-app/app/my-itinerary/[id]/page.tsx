@@ -37,19 +37,19 @@ function extractSearchName(name: string): string {
 function getMapSrc(p: Place, fallback: string) {
   const searchName = extractSearchName(p.name || fallback);
   
-  // 좌표가 없거나 0이면 이름으로만 검색
-  if (!p.lat || !p.lng || p.lat === 0 || p.lng === 0) {
-    return `https://maps.google.com/maps?q=${encodeURIComponent(searchName)}&z=16&ie=UTF8&iwloc=B&output=embed`;
+  // 구글 맵 임베드는 좌표(lat,lng)보다 정식 명칭(Name)으로 검색할 때 훨씬 정확하게 핀을 찍습니다.
+  // 특히 AI가 생성한 좌표가 미세하게 틀릴 경우 바다(파란색)가 보일 수 있으므로, 
+  // 명칭 검색을 기본으로 하고 좌표는 아주 보조적인 수단으로만 한정합니다.
+  
+  let query = encodeURIComponent(searchName);
+  
+  // 좌표가 존재하고 정상 범위 내에 있다면, @ 기호를 사용하여 명칭과 좌표를 결합합니다.
+  if (p.lat && p.lng && Math.abs(p.lat) <= 90 && Math.abs(p.lng) <= 180 && p.lat !== 0) {
+    return `https://maps.google.com/maps?q=${query}@${p.lat},${p.lng}&z=16&ie=UTF8&output=embed`;
   }
 
-  // 좌표가 90/-90 (위도) 또는 180/-180 (경도) 범위를 벗어나는지 체크 (AI 환각 방지)
-  if (Math.abs(p.lat) > 90 || Math.abs(p.lng) > 180) {
-    return `https://maps.google.com/maps?q=${encodeURIComponent(searchName)}&z=16&ie=UTF8&iwloc=B&output=embed`;
-  }
-
-  // 좌표와 이름을 함께 사용하여 가장 정확한 핀을 찍음
-  // 콤마(,) 뒤에 이름을 괄호 없이 더해서 검색 신뢰도 높임
-  return `https://maps.google.com/maps?q=${p.lat},${p.lng}+${encodeURIComponent(searchName)}&z=17&ie=UTF8&iwloc=B&output=embed`;
+  // 좌표가 없는 경우에는 명칭으로만 검색 (가장 안전한 방법)
+  return `https://maps.google.com/maps?q=${query}&z=16&ie=UTF8&output=embed`;
 }
 
 export default function ItineraryDetailPage() {
