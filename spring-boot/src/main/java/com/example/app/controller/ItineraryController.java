@@ -62,4 +62,18 @@ public class ItineraryController {
             .map(it -> ResponseEntity.ok((Object) it))
             .orElse(ResponseEntity.status(404).body("일정을 찾을 수 없습니다."));
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteItinerary(HttpServletRequest request, @PathVariable Long id) {
+        String email = getEmailFromJwt(request);
+        if (email == null) return ResponseEntity.status(401).body("로그인이 필요합니다.");
+        
+        return itineraryRepository.findById(id)
+            .filter(it -> it.getEmail().equals(email))
+            .map(it -> {
+                itineraryRepository.delete(it);
+                return ResponseEntity.ok().build();
+            })
+            .orElse(ResponseEntity.status(404).body("일정을 찾을 수 없습니다."));
+    }
 }
