@@ -44,14 +44,12 @@ function extractSearchName(name: string): string {
 }
 
 function getMapSrc(p: Place, fallback: string) {
+  // 이름이 있으면 이름으로 검색하는 것이 가장 정확합니다. (좌표 오차가 바다를 찍는 현상 방지)
   const searchName = extractSearchName(p.name || fallback);
-  let query = encodeURIComponent(searchName);
+  const query = encodeURIComponent(searchName);
   
-  // 구글 맵 임베드는 좌표보다 명칭 검색이 훨씬 정확합니다.
-  if (p.lat && p.lng && p.lat !== 0) {
-    return `https://maps.google.com/maps?q=${query}@${p.lat},${p.lng}&z=16&ie=UTF8&output=embed`;
-  }
-  return `https://maps.google.com/maps?q=${query}&z=16&ie=UTF8&output=embed`;
+  // z=15로 설정하여 주변 지형물과 함께 장소가 잘 보이도록 최적화합니다.
+  return `https://maps.google.com/maps?q=${query}&z=15&ie=UTF8&output=embed`;
 }
 
 function getGoogleMapsSearchLink(p: Place, fallback: string) {

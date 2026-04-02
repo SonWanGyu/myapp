@@ -35,18 +35,15 @@ function extractSearchName(name: string): string {
 }
 
 function getMapSrc(p: Place, fallback: string) {
+  // 이름이 있으면 이름으로 검색하는 것이 가장 정확합니다. (좌표 오차 무시)
   const searchName = extractSearchName(p.name || fallback);
-  let query = encodeURIComponent(searchName);
+  const query = encodeURIComponent(searchName);
   
-  // 구글 맵 임베드는 좌표보다 명칭 검색이 훨씬 정확합니다. 
-  // 좌표는 오차가 있을 수 있으므로 이름으로 검색하되, 좌표가 있다면 정확한 위치 힌트(@좌표)로만 사용합니다.
-  if (p.lat && p.lng && p.lat !== 0) {
-    return `https://maps.google.com/maps?q=${query}@${p.lat},${p.lng}&z=16&ie=UTF8&output=embed`;
-  }
-  return `https://maps.google.com/maps?q=${query}&z=16&ie=UTF8&output=embed`;
+  // z=15 정도로 설정하여 장소 주변이 잘 보이게 합니다.
+  return `https://maps.google.com/maps?q=${query}&z=15&ie=UTF8&output=embed`;
 }
 
-// 구글 맵 외부 링크 생성 (좌표가 아닌 이름 기반 검색으로 파라미터 오류 해결)
+// 구글 맵 외부 링크 생성 (이름 기반 검색)
 function getGoogleMapsSearchLink(p: Place, fallback: string) {
   const searchName = extractSearchName(p.name || fallback);
   return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(searchName)}`;
