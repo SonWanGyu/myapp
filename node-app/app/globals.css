@@ -373,12 +373,12 @@ textarea { resize: vertical; min-height: 200px; }
 
 .timeline-mini {
   position: relative;
-  padding-left: 45px; /* 30px -> 45px (숫자 짤림 방지) */
+  padding-left: 60px; /* 45px -> 60px (확실한 공간 확보) */
 }
 
 .timeline-mini-line {
   position: absolute;
-  left: 20px; /* 12px -> 20px */
+  left: 28px; /* 20px -> 28px */
   top: 0;
   bottom: 0;
   width: 2px;
@@ -387,7 +387,7 @@ textarea { resize: vertical; min-height: 200px; }
 
 .timeline-mini-node {
   position: absolute;
-  left: -35px; /* -30px -> -35px */
+  left: -44px; /* 노드 위치 재조정 (-35px -> -44px) */
   top: 10px;
   width: 22px;
   height: 22px;
@@ -939,13 +939,13 @@ textarea { resize: vertical; min-height: 200px; }
 
 .timeline-wrapper {
   position: relative;
-  padding-left: 55px; /* 40px -> 55px (숫자 짤림 방지) */
+  padding-left: 70px; /* 55px -> 70px */
   margin-top: 2rem;
 }
 
 .timeline-vertical-line {
   position: absolute;
-  left: 28px; /* 18px -> 28px */
+  left: 36px; /* 28px -> 36px */
   top: 0;
   bottom: 0;
   width: 2px;
@@ -955,7 +955,7 @@ textarea { resize: vertical; min-height: 200px; }
 
 .timeline-node-dot {
   position: absolute;
-  left: -42px; /* 보정 */
+  left: -52px; /* 보정 (-42px -> -52px) */
   top: 10px;
   width: 26px;
   height: 26px;
