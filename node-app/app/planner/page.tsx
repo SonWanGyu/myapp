@@ -657,46 +657,50 @@ export default function PlannerPage() {
 
              {/* 타임라인 장소 카드 */}
              <div className="timeline-wrapper">
-               {/* 타임라인 세로선 */}
-               <div className="timeline-vertical-line" />
-               
                {activeDay.places.map((p, j) => {
                  const dist = j > 0 ? calcDistance(activeDay.places[j-1].lat, activeDay.places[j-1].lng, p.lat, p.lng) : '';
-                 return (<Fragment key={j}>
-                 {dist && (
-                   <div className="distance-badge-container">
-                     <div className="distance-dash" />
-                     <span className="distance-badge">
-                       🚶 {dist}
-                     </span>
-                   </div>
-                 )}
-                 <div className="relative mb-line">
-                   {/* 번호 원 */}
-                   <div 
-                      className="timeline-node-dot" 
-                      style={{ backgroundColor: selectedPlace === p.name ? 'var(--primary)' : '#818cf8' }}
-                   >
-                     {j + 1}
-                   </div>
-                   
-                   {/* 장소 카드 */}
-                   <div
-                     onClick={() => setSelectedPlace(p.name)}
-                     className={`itinerary-item-card ${selectedPlace === p.name ? 'active' : ''}`}
-                   >
-                     <strong className="block fs-0-95 mb-line color-slate-800">
-                       {p.name}
-                     </strong>
-                     <span className="fs-0-8 lh-1-5 color-slate-500">{p.description}</span>
-                     {selectedPlace === p.name && (
-                       <div className="mt-line fw-600 color-primary fs-0-75">
-                         📍 지도에서 보기
+                 return (
+                   <div key={j} className="timeline-row">
+                     {/* 좌측: 선과 숫자 */}
+                     <div className="timeline-left">
+                       <div className="timeline-vertical-line" />
+                       <div 
+                         className="timeline-node-dot" 
+                         style={{ backgroundColor: selectedPlace === p.name ? 'var(--primary)' : '#818cf8', color: '#fff' }}
+                       >
+                         {j + 1}
                        </div>
-                     )}
+                     </div>
+
+                     {/* 우측: 거리 및 카드 */}
+                     <div className="timeline-right">
+                       {/* 거리 표시 (이전 항목과의 거리) */}
+                       {dist && (
+                         <div className="distance-badge-container py-line" style={{ marginTop: '-20px', marginBottom: '8px' }}>
+                           <span className="distance-badge" style={{ fontSize: '0.75rem' }}>
+                             🚶 {dist}
+                           </span>
+                         </div>
+                       )}
+
+                       {/* 장소 카드 */}
+                       <div
+                         onClick={() => setSelectedPlace(p.name)}
+                         className={`itinerary-item-card ${selectedPlace === p.name ? 'active' : ''}`}
+                       >
+                         <strong className="block fs-0-9 mb-line color-slate-800">
+                           {p.name}
+                         </strong>
+                         <span className="fs-0-75 lh-1-5 color-slate-500 word-keep-all block">{p.description}</span>
+                         {selectedPlace === p.name && (
+                           <div className="mt-line fw-600 color-primary fs-0-72">
+                             📍 지도에서 보기
+                           </div>
+                         )}
+                       </div>
+                     </div>
                    </div>
-                 </div>
-                 </Fragment>);
+                 );
                })}
              </div>
 

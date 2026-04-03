@@ -962,27 +962,28 @@ textarea { resize: vertical; min-height: 200px; }
 
 .timeline-wrapper {
   position: relative;
-  padding-left: 50px; /* 양수 좌표 기반으로 개편 */
+  /* padding-left 제거: Flex 구조로 대체 */
   margin-top: 2rem;
 }
 
 .timeline-vertical-line {
   position: absolute;
-  left: 20px; /* 선 위치 */
+  left: 50%; /* 20px -> 50% (Left Column 중심) */
   top: 0;
   bottom: 0;
   width: 2px;
+  transform: translateX(-50%);
   background: linear-gradient(to bottom, var(--primary), #c7d2fe);
   border-radius: 2px;
+  z-index: 1;
 }
 
 .timeline-node-dot {
-  position: absolute;
-  left: 7px; /* 선(20px) 중앙 정렬: 20 - 13 = 7 */
-  top: 10px;
+  position: relative;
   width: 26px;
   height: 26px;
   border-radius: 50%;
+  background-color: var(--primary);
   color: #fff;
   display: flex;
   align-items: center;
@@ -991,6 +992,7 @@ textarea { resize: vertical; min-height: 200px; }
   font-weight: 800;
   z-index: 5;
   box-shadow: 0 4px 10px rgba(99,102,241,0.4);
+  margin-top: 10px;
 }
 
 .itinerary-item-card strong { font-size: 0.85rem; } /* 0.95 -> 0.85 */
