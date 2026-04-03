@@ -935,70 +935,30 @@ textarea { resize: vertical; min-height: 200px; }
   transition: width 0.3s ease-out;
 }
 
+/* Progress Bar Loading Text Helpers (Unify) */
 .progress-text {
   font-size: 0.85rem;
   color: #64748b;
   margin-top: 0.8rem;
   font-weight: 600;
+  text-align: center;
 }
-
-/* Timeline/Node Adjustments */
-.timeline-mini-node {
-  position: absolute;
-  left: -28px;
-  top: 10px;
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  color: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.75rem;
-  font-weight: 800;
-  z-index: 5;
-  box-shadow: 0 2px 6px rgba(99,102,241,0.4);
-}
-
-.timeline-wrapper {
-  position: relative;
-  /* padding-left 제거: Flex 구조로 대체 */
-  margin-top: 2rem;
-}
-
-.timeline-vertical-line {
-  position: absolute;
-  left: 50%; /* 20px -> 50% (Left Column 중심) */
-  top: 0;
-  bottom: 0;
-  width: 2px;
-  transform: translateX(-50%);
-  background: linear-gradient(to bottom, var(--primary), #c7d2fe);
-  border-radius: 2px;
-  z-index: 1;
-}
-
-.timeline-node-dot {
-  position: relative;
-  width: 26px;
-  height: 26px;
-  border-radius: 50%;
-  background-color: var(--primary);
-  color: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.8rem;
-  font-weight: 800;
-  z-index: 5;
-  box-shadow: 0 4px 10px rgba(99,102,241,0.4);
-  margin-top: 10px;
-}
-
-.itinerary-item-card strong { font-size: 0.85rem; } /* 0.95 -> 0.85 */
-.itinerary-item-card span { font-size: 0.75rem; } /* 0.8 -> 0.75 */
 
 .py-line { padding-top: 0.5rem; padding-bottom: 0.5rem; }
 .fs-4-rem { font-size: 4rem; } 
 .mb-line { margin-bottom: 0.75rem; }
 .lh-1-4 { line-height: 1.4; }
+.word-keep-all { word-break: keep-all; }
+.fs-0-7 { font-size: 0.7rem; }
+.fs-0-72 { font-size: 0.72rem; }
+.fs-0-75 { font-size: 0.75rem; }
+.fw-600 { font-weight: 600; }
+
+/* Timeline Utility Refinement (Replace Inlines) */
+.timeline-distance-gap {
+  margin-top: -20px;
+  margin-bottom: 8px;
+}
+
+.node-active { background-color: var(--primary) !important; color: #fff !important; }
+.node-inactive { background-color: #818cf8 !important; color: #fff !important; }

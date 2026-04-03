@@ -142,20 +142,17 @@ export default function ItineraryDetailPage() {
                 {/* 좌측: 선과 숫자 */}
                 <div className="timeline-left">
                   <div className="timeline-mini-line" />
-                  <div 
-                    className="timeline-mini-node"
-                    style={{ backgroundColor: selectedPlace === p.name ? 'var(--primary)' : '#818cf8', color: '#fff' }}
-                  >
+                  <div className={`timeline-mini-node ${selectedPlace === p.name ? 'node-active' : 'node-inactive'}`}>
                     {j + 1}
                   </div>
                 </div>
 
                 {/* 우측: 거리 및 카드 */}
                 <div className="timeline-right">
-                  {/* 거리 표시 (이전 항목과의 거리) */}
+                  {/* 거리 표시 */}
                   {dist && (
-                    <div className="distance-badge-container py-line" style={{ marginTop: '-20px', marginBottom: '5px' }}>
-                      <span className="distance-badge" style={{ fontSize: '0.7rem' }}>
+                    <div className="distance-badge-container py-line timeline-distance-gap">
+                      <span className="distance-badge fs-0-7">
                         🚶 {dist}
                       </span>
                     </div>

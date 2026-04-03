@@ -664,20 +664,17 @@ export default function PlannerPage() {
                      {/* 좌측: 선과 숫자 */}
                      <div className="timeline-left">
                        <div className="timeline-vertical-line" />
-                       <div 
-                         className="timeline-node-dot" 
-                         style={{ backgroundColor: selectedPlace === p.name ? 'var(--primary)' : '#818cf8', color: '#fff' }}
-                       >
+                       <div className={`timeline-node-dot ${selectedPlace === p.name ? 'node-active' : 'node-inactive'}`}>
                          {j + 1}
                        </div>
                      </div>
 
                      {/* 우측: 거리 및 카드 */}
                      <div className="timeline-right">
-                       {/* 거리 표시 (이전 항목과의 거리) */}
+                       {/* 거리 표시 */}
                        {dist && (
-                         <div className="distance-badge-container py-line" style={{ marginTop: '-20px', marginBottom: '8px' }}>
-                           <span className="distance-badge" style={{ fontSize: '0.75rem' }}>
+                         <div className="distance-badge-container py-line timeline-distance-gap">
+                           <span className="distance-badge fs-0-75">
                              🚶 {dist}
                            </span>
                          </div>
@@ -705,15 +702,10 @@ export default function PlannerPage() {
              </div>
 
              {/* 내 일정에 담기 플로팅 버튼 */}
-             <div style={{ position: 'sticky', bottom: '20px', textAlign: 'center', marginTop: '2rem', zIndex: 10 }}>
+             <div className="save-floating-btn-container">
                <button
-                 className="primary"
+                 className="primary save-btn-large"
                  onClick={saveToMyItinerary}
-                 style={{
-                   padding: '14px 40px', fontSize: '1.1rem', borderRadius: '50px',
-                   boxShadow: '0 6px 24px rgba(99,102,241,0.4)',
-                   display: 'inline-flex', alignItems: 'center', gap: '8px'
-                 }}
                >
                  📥 내 일정으로 담기
                </button>
