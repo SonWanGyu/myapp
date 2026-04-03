@@ -325,10 +325,10 @@ textarea { resize: vertical; min-height: 200px; }
   min-width: 380px;
   height: 100%;
   overflow-y: auto;
-  overflow-x: hidden;
+  overflow-x: visible; /* hidden -> visible (숫자 짤림 방지) */
   background-color: #fff;
   border-right: 1px solid #e2e8f0;
-  padding: 24px 20px;
+  padding: 24px 30px; /* 20px -> 30px (전체 여백 확장) */
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
@@ -373,12 +373,12 @@ textarea { resize: vertical; min-height: 200px; }
 
 .timeline-mini {
   position: relative;
-  padding-left: 60px; /* 45px -> 60px (확실한 공간 확보) */
+  padding-left: 50px; /* 여백 충분히 확보 */
 }
 
 .timeline-mini-line {
   position: absolute;
-  left: 28px; /* 20px -> 28px */
+  left: 20px; /* 선 위치 보정 */
   top: 0;
   bottom: 0;
   width: 2px;
@@ -387,7 +387,7 @@ textarea { resize: vertical; min-height: 200px; }
 
 .timeline-mini-node {
   position: absolute;
-  left: -44px; /* 노드 위치 재조정 (-35px -> -44px) */
+  left: -38px; /* 노드 위치 중앙 정렬 (-44px -> -38px) */
   top: 10px;
   width: 22px;
   height: 22px;
@@ -939,13 +939,13 @@ textarea { resize: vertical; min-height: 200px; }
 
 .timeline-wrapper {
   position: relative;
-  padding-left: 70px; /* 55px -> 70px */
+  padding-left: 60px; /* 패딩 최소화 대신 안전한 공간 확보 */
   margin-top: 2rem;
 }
 
 .timeline-vertical-line {
   position: absolute;
-  left: 36px; /* 28px -> 36px */
+  left: 28px; /* 선 위치 보정 */
   top: 0;
   bottom: 0;
   width: 2px;
@@ -955,7 +955,7 @@ textarea { resize: vertical; min-height: 200px; }
 
 .timeline-node-dot {
   position: absolute;
-  left: -52px; /* 보정 (-42px -> -52px) */
+  left: -44px; /* 노드 위치 중앙 정렬 (-52px -> -44px) */
   top: 10px;
   width: 26px;
   height: 26px;
