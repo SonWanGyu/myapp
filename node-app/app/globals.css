@@ -56,6 +56,7 @@ textarea { resize: vertical; min-height: 200px; }
 /* Global Classes */
 .container { max-width: 800px; margin: 3rem auto; padding: 0 1rem; }
 .login-container { max-width: 400px; margin: 5rem auto; padding: 2rem; background-color: var(--card-bg); border-radius: var(--radius); box-shadow: var(--shadow-md); }
+.no-underline { text-decoration: none !important; }
 .card { background-color: var(--card-bg); border-radius: var(--radius); box-shadow: var(--shadow-md); overflow: hidden; padding: 2rem; }
 .card-no-padding { background-color: var(--card-bg); border-radius: var(--radius); box-shadow: var(--shadow-md); overflow: hidden; }
 .card-header { padding: 1.5rem 2rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
@@ -372,12 +373,12 @@ textarea { resize: vertical; min-height: 200px; }
 
 .timeline-mini {
   position: relative;
-  padding-left: 30px;
+  padding-left: 45px; /* 30px -> 45px (숫자 짤림 방지) */
 }
 
 .timeline-mini-line {
   position: absolute;
-  left: 12px;
+  left: 20px; /* 12px -> 20px */
   top: 0;
   bottom: 0;
   width: 2px;
@@ -386,18 +387,18 @@ textarea { resize: vertical; min-height: 200px; }
 
 .timeline-mini-node {
   position: absolute;
-  left: -30px;
+  left: -35px; /* -30px -> -35px */
   top: 10px;
   width: 22px;
   height: 22px;
   border-radius: 50%;
-  color: #fff;
+  color: #fff !important;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 0.65rem;
   font-weight: 700;
-  z-index: 1;
+  z-index: 5;
   box-shadow: 0 2px 6px rgba(99,102,241,0.35);
 }
 
@@ -409,8 +410,10 @@ textarea { resize: vertical; min-height: 200px; }
   border: 1px solid #e2e8f0;
   transition: all 0.15s;
   word-break: break-word;
-  overflow-wrap: break-word;
 }
+
+.itinerary-card-sm strong { font-size: 0.8rem; } /* 0.85 -> 0.8 */
+.itinerary-card-sm span { font-size: 0.7rem; } /* 0.75 -> 0.7 */
 
 .itinerary-card-sm.active {
   background-color: #eef2ff;
@@ -934,9 +937,25 @@ textarea { resize: vertical; min-height: 200px; }
   box-shadow: 0 2px 6px rgba(99,102,241,0.4);
 }
 
+.timeline-wrapper {
+  position: relative;
+  padding-left: 55px; /* 40px -> 55px (숫자 짤림 방지) */
+  margin-top: 2rem;
+}
+
+.timeline-vertical-line {
+  position: absolute;
+  left: 28px; /* 18px -> 28px */
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: linear-gradient(to bottom, var(--primary), #c7d2fe);
+  border-radius: 2px;
+}
+
 .timeline-node-dot {
   position: absolute;
-  left: -40px;
+  left: -42px; /* 보정 */
   top: 10px;
   width: 26px;
   height: 26px;
@@ -950,6 +969,9 @@ textarea { resize: vertical; min-height: 200px; }
   z-index: 5;
   box-shadow: 0 4px 10px rgba(99,102,241,0.4);
 }
+
+.itinerary-item-card strong { font-size: 0.85rem; } /* 0.95 -> 0.85 */
+.itinerary-item-card span { font-size: 0.75rem; } /* 0.8 -> 0.75 */
 
 .py-line { padding-top: 0.5rem; padding-bottom: 0.5rem; }
 .fs-4-rem { font-size: 4rem; } 
