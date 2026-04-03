@@ -509,23 +509,34 @@ textarea { resize: vertical; min-height: 200px; }
 }
 
 /* Header & Shared Helpers */
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  background-color: #fff;
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
 .hamburger-btn {
   font-size: 1.5rem;
   padding: 0.2rem 0.5rem;
   border: none;
   cursor: pointer;
   background: none;
-  color: var(--text-main);
+  color: var(--text);
   transition: opacity 0.2s;
+  display: flex;
+  align-items: center;
 }
 
-.hamburger-btn:hover {
-  opacity: 0.7;
-}
-
-.app-title { margin: 0; font-size: 1.5rem; color: var(--primary); letter-spacing: -0.5px; }
-.nav-actions { display: flex; gap: 1rem; align-items: center; }
-.user-greeting { font-weight: 500; color: var(--text-muted); display: flex; align-items: center; gap: 0.5rem; }
+.hamburger-btn:hover { opacity: 0.7; }
+.app-title { margin: 0; font-size: 1.5rem; color: var(--primary); letter-spacing: -0.5px; text-decoration: none; display: flex; align-items: center; gap: 8px; }
+.nav-actions { display: flex; gap: 1.5rem; align-items: center; }
+.user-greeting { font-weight: 500; color: var(--text-muted); display: flex; align-items: center; gap: 0.5rem; font-size: 0.9rem; }
 .admin-badge { background-color: #ef4444; color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: bold; }
 .admin-badge-light { background-color: #fee2e2; color: #ef4444; padding: 2px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: bold; }
 .user-badge-light { background-color: #e0e7ff; color: #4f46e5; padding: 2px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: bold; }
@@ -881,4 +892,66 @@ textarea { resize: vertical; min-height: 200px; }
   flex-direction: column;
 }
 
+/* Progress Bar */
+.progress-bar-container {
+  width: 100%;
+  max-width: 500px;
+  margin: 1.5rem auto;
+  height: 8px;
+  background-color: #f1f5f9;
+  border-radius: 10px;
+  overflow: hidden;
+}
 
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #3b82f6, #60a5fa);
+  transition: width 0.3s ease-out;
+}
+
+.progress-text {
+  font-size: 0.85rem;
+  color: #64748b;
+  margin-top: 0.8rem;
+  font-weight: 600;
+}
+
+/* Timeline/Node Adjustments */
+.timeline-mini-node {
+  position: absolute;
+  left: -28px;
+  top: 10px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 800;
+  z-index: 5;
+  box-shadow: 0 2px 6px rgba(99,102,241,0.4);
+}
+
+.timeline-node-dot {
+  position: absolute;
+  left: -40px;
+  top: 10px;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  font-weight: 800;
+  z-index: 5;
+  box-shadow: 0 4px 10px rgba(99,102,241,0.4);
+}
+
+.py-line { padding-top: 0.5rem; padding-bottom: 0.5rem; }
+.fs-4-rem { font-size: 4rem; } 
+.mb-line { margin-bottom: 0.75rem; }
+.lh-1-4 { line-height: 1.4; }

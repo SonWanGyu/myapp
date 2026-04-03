@@ -48,6 +48,40 @@ function getGoogleMapsSearchLink(p: Place, fallback: string) {
   return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${searchName} ${cityHint}`.trim())}`;
 }
 
+// 로딩 진행바 컴포넌트
+function LoadingProgressBar() {
+  const [progress, setProgress] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setProgress(prev => {
+        if (prev >= 95) {
+          clearInterval(timer);
+          return 95;
+        }
+        // 처음엔 빠르게, 갈수록 느리게 차오름
+        const inc = Math.max(0.5, (100 - prev) / 20);
+        return prev + inc;
+      });
+    }, 150);
+    return () => clearInterval(timer);
+  }, []);
+
+  return (
+    <div className="w-full">
+      <div className="progress-bar-container">
+        <div className="progress-bar-fill" style={{ width: `${progress}%` }} />
+      </div>
+      <p className="progress-text">
+        {progress < 30 && '지형 정보를 분석하고 있어요...'}
+        {progress >= 30 && progress < 60 && '최적의 경로를 계산 중입니다...'}
+        {progress >= 60 && progress < 90 && '장소별 상세 일정을 다듬고 있어요...'}
+        {progress >= 90 && '마무리 최적화 중... 잠시만요!'}
+      </p>
+    </div>
+  );
+}
+
 export default function PlannerPage() {
   const { isAuthenticated } = useAuth();
   const router = useRouter();
@@ -544,10 +578,13 @@ export default function PlannerPage() {
         )}
 
         {step === 10 && loading && (
-          <div className="text-center p-5 animate-pulse">
+          <div className="text-center p-5 animate-fade-in">
              <div className="fs-4-rem mb-line">🤖</div>
              <h2>AI가 일정의 밀도를 조절하고 있어요...</h2>
              <p className="text-muted">보통 10~20초 정도 소요됩니다. 조금만 기다려주세요!</p>
+             
+             {/* 진행바 추가 */}
+             <LoadingProgressBar />
           </div>
         )}
 

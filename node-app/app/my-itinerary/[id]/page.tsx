@@ -82,9 +82,12 @@ export default function ItineraryDetailPage() {
 
   if (isInitializing || !itinerary || !schedule) {
     return (
-      <div className="container animate-fade-in text-center pt-4">
-        <div className="fs-2 mb-line">⏳</div>
-        <h2>일정을 불러오는 중...</h2>
+      <div className="centered-full-page animate-fade-in">
+        <div className="text-center">
+          <div className="fs-3 mb-line">🚀</div>
+          <h2 className="color-slate-800">일정을 불러오는 중...</h2>
+          <p className="text-muted">잠시만 기다려주세요!</p>
+        </div>
       </div>
     );
   }
@@ -107,12 +110,14 @@ export default function ItineraryDetailPage() {
 
         {/* 여행 정보 */}
         <div className="itinerary-info-box">
-          <span className="fs-0-75 color-slate-400">AI 추천 여행</span>
+          <div className="flex-between mb-line">
+            <span className="user-badge-light">AI 맞춤 추천</span>
+            <span className="fs-0-8 color-slate-400">{totalDays}일 일정</span>
+          </div>
           <h2 className="itinerary-title-lg">{itinerary.title}</h2>
           <p className="itinerary-date-p">
-            📅 {itinerary.startDate} ~ {itinerary.endDate}
+            {itinerary.startDate} ~ {itinerary.endDate}
           </p>
-          <span className="fs-0-75 color-slate-400">{totalDays}일 일정</span>
         </div>
 
         {/* Day 탭 */}
@@ -150,7 +155,7 @@ export default function ItineraryDetailPage() {
                   {/* 번호 */}
                   <div 
                     className="timeline-mini-node"
-                    style={{ backgroundColor: selectedPlace === p.name ? 'var(--primary)' : '#818cf8' }}
+                    style={{ backgroundColor: selectedPlace === p.name ? 'var(--primary)' : '#818cf8', color: '#fff' }}
                   >
                     {j + 1}
                   </div>
