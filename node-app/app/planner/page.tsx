@@ -51,6 +51,7 @@ function getGoogleMapsSearchLink(p: Place, fallback: string) {
 // 로딩 진행바 컴포넌트
 function LoadingProgressBar() {
   const [progress, setProgress] = useState(0);
+  const [dots, setDots] = useState('');
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -59,12 +60,20 @@ function LoadingProgressBar() {
           clearInterval(timer);
           return 95;
         }
-        // 처음엔 빠르게, 갈수록 느리게 차오름
         const inc = Math.max(0.5, (100 - prev) / 20);
         return prev + inc;
       });
     }, 150);
-    return () => clearInterval(timer);
+    
+    // 마침표 애니메이션
+    const dotsTimer = setInterval(() => {
+      setDots(prev => (prev.length >= 3 ? '' : prev + '.'));
+    }, 500);
+
+    return () => {
+      clearInterval(timer);
+      clearInterval(dotsTimer);
+    };
   }, []);
 
   return (
@@ -73,10 +82,10 @@ function LoadingProgressBar() {
         <div className="progress-bar-fill" style={{ width: `${progress}%` }} />
       </div>
       <p className="progress-text">
-        {progress < 30 && '지형 정보를 분석하고 있어요...'}
-        {progress >= 30 && progress < 60 && '최적의 경로를 계산 중입니다...'}
-        {progress >= 60 && progress < 90 && '장소별 상세 일정을 다듬고 있어요...'}
-        {progress >= 90 && '마무리 최적화 중... 잠시만요!'}
+        {progress < 30 && `지형 정보를 분석하고 있어요${dots}`}
+        {progress >= 30 && progress < 60 && `최적의 경로를 계산 중입니다${dots}`}
+        {progress >= 60 && progress < 90 && `장소별 상세 일정을 다듬고 있어요${dots}`}
+        {progress >= 90 && `마무리 최적화 중${dots} 잠시만요!`}
       </p>
     </div>
   );
