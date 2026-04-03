@@ -82,8 +82,8 @@ export default function ItineraryDetailPage() {
 
   if (isInitializing || !itinerary || !schedule) {
     return (
-      <div className="container animate-fade-in text-center" style={{ paddingTop: '4rem' }}>
-        <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>⏳</div>
+      <div className="container animate-fade-in text-center pt-4">
+        <div className="fs-2 mb-line">⏳</div>
         <h2>일정을 불러오는 중...</h2>
       </div>
     );
@@ -94,48 +94,34 @@ export default function ItineraryDetailPage() {
   const selectedP = activeDay.places.find(p => p.name === selectedPlace) || activeDay.places[0];
 
   return (
-    <div style={{ display: 'flex', height: 'calc(100vh - 70px)', overflow: 'hidden' }}>
+    <div className="detail-page-wrapper">
       {/* 왼쪽 패널 */}
-      <div style={{
-        width: '400px', minWidth: '380px', height: '100%',
-        overflowY: 'auto', overflowX: 'hidden',
-        backgroundColor: '#fff', borderRight: '1px solid #e2e8f0',
-        padding: '24px 20px',
-        scrollbarWidth: 'thin',
-        display: 'flex', flexDirection: 'column',
-        boxSizing: 'border-box'
-      }}>
+      <div className="left-panel">
         {/* 뒤로가기 */}
         <button
           onClick={() => router.push('/my-itinerary')}
-          style={{ background: 'none', border: 'none', color: 'var(--primary)', cursor: 'pointer', fontSize: '0.85rem', marginBottom: '12px', padding: 0 }}
+          className="back-link-btn"
         >
           ← 내 일정 목록
         </button>
 
         {/* 여행 정보 */}
-        <div style={{ marginBottom: '16px' }}>
-          <span style={{ color: '#94a3b8', fontSize: '0.75rem' }}>AI 추천 여행</span>
-          <h2 style={{ margin: '4px 0 4px 0', color: '#1e293b', fontSize: '1.15rem', lineHeight: 1.4, wordBreak: 'keep-all' }}>{itinerary.title}</h2>
-          <p style={{ margin: 0, color: 'var(--primary)', fontSize: '0.8rem', fontWeight: '600' }}>
+        <div className="itinerary-info-box">
+          <span className="fs-0-75 color-slate-400">AI 추천 여행</span>
+          <h2 className="itinerary-title-lg">{itinerary.title}</h2>
+          <p className="itinerary-date-p">
             📅 {itinerary.startDate} ~ {itinerary.endDate}
           </p>
-          <span style={{ color: '#94a3b8', fontSize: '0.75rem' }}>{totalDays}일 일정</span>
+          <span className="fs-0-75 color-slate-400">{totalDays}일 일정</span>
         </div>
 
         {/* Day 탭 */}
-        <div style={{ display: 'flex', gap: '5px', marginBottom: '16px', flexWrap: 'wrap' }}>
+        <div className="flex-wrap flex-gap-5 mb-1">
           {schedule.days.map((d, i) => (
             <button
               key={i}
               onClick={() => { setSelectedDayIdx(i); setSelectedPlace(schedule.days[i].places[0]?.name || ''); }}
-              style={{
-                padding: '5px 12px', borderRadius: '14px', fontSize: '0.78rem', fontWeight: '600',
-                border: 'none', cursor: 'pointer',
-                backgroundColor: selectedDayIdx === i ? 'var(--primary)' : '#f1f5f9',
-                color: selectedDayIdx === i ? '#fff' : '#64748b',
-                transition: 'all 0.2s',
-              }}
+              className={`day-tab-btn ${selectedDayIdx === i ? 'primary' : 'secondary border-none bg-slate-100 color-slate-500'} p-0-5-1-2 fs-0-78`}
             >
               {d.day}
             </button>
@@ -143,11 +129,8 @@ export default function ItineraryDetailPage() {
         </div>
 
         {/* 타임라인 장소 목록 */}
-        <div style={{ position: 'relative', paddingLeft: '30px' }}>
-          <div style={{
-            position: 'absolute', left: '12px', top: 0, bottom: 0, width: '2px',
-            background: 'linear-gradient(to bottom, var(--primary), #c7d2fe)',
-          }} />
+        <div className="timeline-mini">
+          <div className="timeline-mini-line" />
 
           {activeDay.places.map((p, j) => {
             const dist = j > 0 ? calcDistance(activeDay.places[j - 1].lat, activeDay.places[j - 1].lng, p.lat, p.lng) : '';
@@ -155,50 +138,36 @@ export default function ItineraryDetailPage() {
               <div key={j}>
                 {/* 거리 표시 (트리플 스타일) */}
                 {dist && (
-                  <div style={{
-                    display: 'flex', alignItems: 'center', gap: '6px',
-                    padding: '6px 0 6px 0', color: '#94a3b8', fontSize: '0.72rem',
-                  }}>
-                    <div style={{ width: '16px', borderTop: '1px dashed #cbd5e1' }} />
-                    <span style={{ backgroundColor: '#f1f5f9', padding: '2px 8px', borderRadius: '10px', fontWeight: '500' }}>
+                  <div className="distance-badge-container py-line">
+                    <div className="distance-dash" />
+                    <span className="distance-badge">
                       🚶 {dist}
                     </span>
                   </div>
                 )}
 
-                <div style={{ position: 'relative', marginBottom: '4px' }}>
+                <div className="relative mb-line">
                   {/* 번호 */}
-                  <div style={{
-                    position: 'absolute', left: '-30px', top: '10px', width: '22px', height: '22px',
-                    borderRadius: '50%',
-                    backgroundColor: selectedPlace === p.name ? 'var(--primary)' : '#818cf8',
-                    color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    fontSize: '0.65rem', fontWeight: '700', zIndex: 1,
-                    boxShadow: '0 2px 6px rgba(99,102,241,0.35)',
-                  }}>
+                  <div 
+                    className="timeline-mini-node"
+                    style={{ backgroundColor: selectedPlace === p.name ? 'var(--primary)' : '#818cf8' }}
+                  >
                     {j + 1}
                   </div>
 
                   {/* 카드 */}
                   <div
                     onClick={() => setSelectedPlace(p.name)}
-                    style={{
-                      padding: '10px 12px', borderRadius: '10px', cursor: 'pointer',
-                      backgroundColor: selectedPlace === p.name ? '#eef2ff' : '#f8fafc',
-                      border: selectedPlace === p.name ? '2px solid var(--primary)' : '1px solid #e2e8f0',
-                      transition: 'all 0.15s',
-                      wordBreak: 'break-word',
-                      overflowWrap: 'break-word',
-                    }}
+                    className={`itinerary-card-sm ${selectedPlace === p.name ? 'active' : ''}`}
                   >
-                    <strong style={{ display: 'block', color: '#1e293b', fontSize: '0.85rem', marginBottom: '3px', lineHeight: 1.4 }}>
+                    <strong className="block color-slate-800 fs-0-85 mb-line lh-1-4">
                       {p.name}
                     </strong>
-                    <span style={{ color: '#64748b', fontSize: '0.75rem', lineHeight: 1.5, display: 'block', wordBreak: 'keep-all' }}>
+                    <span className="color-slate-500 fs-0-75 lh-1-5 block word-keep-all">
                       {p.description}
                     </span>
                     {selectedPlace === p.name && (
-                      <span style={{ color: 'var(--primary)', fontSize: '0.72rem', fontWeight: '600', marginTop: '4px', display: 'block' }}>
+                      <span className="color-primary fs-0-72 fw-600 mt-line block">
                         📍 지도에서 보기
                       </span>
                     )}
@@ -211,13 +180,13 @@ export default function ItineraryDetailPage() {
       </div>
 
       {/* 오른쪽 패널 - 지도 + 정보 바 */}
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', backgroundColor: '#f8fafc' }}>
-        <div style={{ flex: 1, position: 'relative' }}>
+      <div className="right-panel">
+        <div className="flex-1 relative">
           <iframe
             key={selectedPlace}
             width="100%"
             height="100%"
-            style={{ border: 0, display: 'block' }}
+            className="border-none block"
             loading="lazy"
             allowFullScreen
             src={selectedP ? getMapSrc(selectedP, itinerary.title) : `https://maps.google.com/maps?q=${encodeURIComponent(itinerary.title)}&z=13&output=embed`}
@@ -225,21 +194,14 @@ export default function ItineraryDetailPage() {
         </div>
 
         {/* 하단 상세 정보 영역 (스크린샷 스타일 반영) */}
-        <div style={{ padding: '1.2rem', borderTop: '1px solid #e2e8f0', boxShadow: '0 -2px 10px rgba(0,0,0,0.02)' }}>
+        <div className="p-1 border-t border-slate-200 shadow-sm-soft">
           {/* Day 탭 */}
-          <div style={{ display: 'flex', gap: '8px', marginBottom: '1rem', overflowX: 'auto', paddingBottom: '4px' }}>
+          <div className="day-tab-container">
             {schedule.days.map((d, i) => (
               <button
                 key={i}
                 onClick={() => { setSelectedDayIdx(i); setSelectedPlace(schedule.days[i].places[0]?.name || ''); }}
-                style={{
-                  padding: '7px 18px', borderRadius: '50px', fontSize: '0.8rem', fontWeight: '600',
-                  border: selectedDayIdx === i ? 'none' : '1px solid #e2e8f0', cursor: 'pointer', whiteSpace: 'nowrap',
-                  backgroundColor: selectedDayIdx === i ? 'var(--primary)' : '#fff',
-                  color: selectedDayIdx === i ? '#fff' : '#64748b',
-                  boxShadow: selectedDayIdx === i ? '0 3px 8px rgba(99,102,241,0.3)' : 'none',
-                  transition: 'all 0.2s'
-                }}
+                className={`day-tab-btn ${selectedDayIdx === i ? 'primary' : 'secondary shadow-none border-slate-200 color-slate-500 bg-white'}`}
               >
                 {d.day}
               </button>
@@ -248,22 +210,15 @@ export default function ItineraryDetailPage() {
 
           {/* 선택된 장소 정보 카드 */}
           {selectedPlace && (
-            <div className="animate-fade-in" style={{
-              backgroundColor: '#fff', borderRadius: '16px', padding: '1rem 1.2rem',
-              boxShadow: '0 4px 15px rgba(0,0,0,0.05)', border: '1px solid #edf2f7',
-              display: 'flex', alignItems: 'center', gap: '15px'
-            }}>
-              <div style={{
-                width: '40px', height: '40px', borderRadius: '12px', backgroundColor: '#eff6ff',
-                display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0
-              }}>
-                <span style={{ fontSize: '1.3rem' }}>📍</span>
+            <div className="place-detail-card animate-fade-in shadow-sm border-slate-100">
+              <div className="place-icon-box">
+                <span className="fs-1-3">📍</span>
               </div>
-              <div style={{ flex: 1 }}>
-                <strong style={{ display: 'block', color: '#1e293b', fontSize: '0.98rem', marginBottom: '4px' }}>
+              <div className="flex-1">
+                <strong className="block color-slate-800 fs-0-98 mb-line">
                   {selectedPlace}
                 </strong>
-                <p style={{ color: '#64748b', fontSize: '0.82rem', margin: 0, lineHeight: 1.5, wordBreak: 'keep-all' }}>
+                <p className="color-slate-500 fs-0-82 m-0 lh-1-5 word-keep-all">
                   {activeDay.places.find(p => p.name === selectedPlace)?.description}
                 </p>
               </div>

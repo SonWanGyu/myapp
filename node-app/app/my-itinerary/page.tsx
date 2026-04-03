@@ -82,40 +82,35 @@ export default function MyItineraryPage() {
     <div className="container animate-fade-in">
        <h2 className="page-title">📅 내 일정 관리</h2>
        
-       <div style={{ display: 'flex', gap: '1rem', borderBottom: '2px solid var(--border)', paddingBottom: '1rem', marginBottom: '2rem' }}>
+       <div className="itinerary-tab-group">
           <button 
-             className={tab === 'UPCOMING' ? 'primary' : 'secondary'} 
-             style={{ borderRadius: '20px' }}
+             className={`${tab === 'UPCOMING' ? 'primary' : 'secondary'} br-20`} 
              onClick={() => setTab('UPCOMING')}
           >다가오는 일정 ({upcoming.length})</button>
           
           <button 
-             className={tab === 'PAST' ? 'primary' : 'secondary'} 
-             style={{ borderRadius: '20px' }}
+             className={`${tab === 'PAST' ? 'primary' : 'secondary'} br-20`} 
              onClick={() => setTab('PAST')}
           >지난 일정 ({past.length})</button>
        </div>
 
        {displayList.length === 0 ? (
           <div className="text-center p-3 card">
-             <h3 className="text-muted">일정이 없습니다.</h3>
+             <h3 className="text-muted m-0">일정이 없습니다.</h3>
              <Link href="/planner">
                <button className="primary mt-3">✨ 새 일정 만들기</button>
              </Link>
           </div>
        ) : (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '20px' }}>
+          <div className="itinerary-grid">
              {displayList.map(it => (
-               <div key={it.id} className="card" style={{ padding: '1.5rem', position: 'relative' }}>
+               <div key={it.id} className="itinerary-item-card-main">
                  {/* 햄버거 메뉴 버튼 */}
                  <button
+                   className="card-menu-btn"
                    onClick={(e) => {
                      e.stopPropagation();
                      setOpenMenuId(openMenuId === it.id ? null : it.id);
-                   }}
-                   style={{
-                     position: 'absolute', top: '15px', right: '15px',
-                     background: 'none', border: 'none', fontSize: '1.2rem', cursor: 'pointer', color: '#94a3b8'
                    }}
                  >
                    ⋮
@@ -123,29 +118,21 @@ export default function MyItineraryPage() {
 
                  {/* 메뉴 드롭다운 */}
                  {openMenuId === it.id && (
-                   <div style={{
-                     position: 'absolute', top: '40px', right: '15px',
-                     backgroundColor: '#fff', border: '1px solid #e2e8f0', borderRadius: '8px',
-                     boxShadow: '0 4px 12px rgba(0,0,0,0.1)', zIndex: 10, minWidth: '100px',
-                     overflow: 'hidden'
-                   }}>
+                   <div className="mini-dropdown">
                      <button
+                       className="delete-menu-btn"
                        onClick={() => deleteItinerary(it.id)}
-                       style={{
-                         width: '100%', padding: '10px 15px', border: 'none', background: 'none',
-                         textAlign: 'left', cursor: 'pointer', color: '#ef4444', fontSize: '0.85rem'
-                       }}
                      >
                        🗑️ 일정 삭제
                      </button>
                    </div>
                  )}
 
-                 <h3 style={{ margin: '0 0 10px 0', paddingRight: '20px', color: 'var(--primary)', wordBreak: 'keep-all' }}>
+                 <h3 className="itinerary-card-title">
                     {it.title}
                  </h3>
-                 <p className="text-muted" style={{ fontSize: '0.9rem' }}>🗓️ {it.startDate} ~ {it.endDate}</p>
-                 <button className="secondary mt-3 w-100" onClick={() => router.push(`/my-itinerary/${it.id}`)}>일정 상세 보기</button>
+                 <p className="itinerary-card-date">🗓️ {it.startDate} ~ {it.endDate}</p>
+                 <button className="secondary mt-3 w-100 br-8" onClick={() => router.push(`/my-itinerary/${it.id}`)}>일정 상세 보기</button>
                </div>
              ))}
           </div>

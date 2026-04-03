@@ -47,18 +47,18 @@ export default function MyPage() {
   if (isInitializing || !currentUser) return <div className="text-center mt-5">로딩 중...</div>;
 
   return (
-    <div className="container animate-fade-in" style={{ maxWidth: '500px' }}>
+    <div className="container animate-fade-in mypage-container">
       <div className="card">
          <h2 className="page-title center">👤 마이페이지</h2>
          
          <div className="form-group mt-3">
            <label className="fw-500">이메일 (변경 불가)</label>
-           <input type="text" value={currentUser.email} disabled style={{ backgroundColor: '#e2e8f0' }} />
+           <input type="text" value={currentUser.email} disabled className="input-disabled" />
          </div>
 
          <div className="form-group mt-3">
            <label className="fw-500">이름 (변경 불가)</label>
-           <input type="text" value={name} disabled style={{ backgroundColor: '#e2e8f0' }} />
+           <input type="text" value={name} disabled className="input-disabled" />
          </div>
          
          <div className="text-center mt-4">

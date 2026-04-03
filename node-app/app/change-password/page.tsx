@@ -49,10 +49,10 @@ export default function ChangePasswordPage() {
   };
 
   return (
-    <div style={{ minHeight: '100vh', backgroundImage: "url('/ai_vibe.png')", backgroundSize: 'cover', backgroundPosition: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      <div className="travel-login-container animate-fade-in" style={{ maxWidth: '500px' }}>
+    <div className="login-page-bg" style={{ backgroundImage: "url('/ai_vibe.png')" }}>
+      <div className="travel-login-container animate-fade-in mypage-container">
         <h2 className="page-title center">🛡️ 보안 업데이트</h2>
-        <p style={{ color: '#475569', marginBottom: '2rem', lineHeight: '1.6' }}>
+        <p className="text-muted mb-2rem lh-1-6">
           회원가입 후 오랜 시간이 지났습니다.<br/>
           안전한 TravelVibe 서비스 이용을 위해 비밀번호를 변경해주세요.<br/>
           (이전과 동일한 비밀번호도 사용 가능합니다.)
@@ -77,7 +77,7 @@ export default function ChangePasswordPage() {
           <button type="submit" className="primary w-100" disabled={isLoading}>
             {isLoading ? '변경 중...' : '비밀번호 변경'}
           </button>
-          <button type="button" className="secondary w-100 mt-3" onClick={handleDismiss} style={{ padding: '1rem', borderRadius: '12px' }}>
+          <button type="button" className="secondary w-100 mt-3 br-12 p-1" onClick={handleDismiss}>
             다음에 변경하기
           </button>
         </form>

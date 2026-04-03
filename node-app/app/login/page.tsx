@@ -72,12 +72,12 @@ export default function LoginPage() {
   if (isInitializing || isAuthenticated) return null;
 
   return (
-    <div style={{ minHeight: '100vh', backgroundImage: "url('/aurora.png')", backgroundSize: 'cover', backgroundPosition: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+    <div className="login-page-bg">
       <div className="travel-login-container animate-fade-in">
         <h2 className="page-title center">
           {isLoginMode ? '✈️ 로그인' : '✈️ 회원가입'}
         </h2>
-        <p style={{ color: '#64748b', marginBottom: '2rem' }}>
+        <p className="login-welcome-text">
           {isLoginMode ? 'TravelVibe에 다시 오신 것을 환영합니다.' : 'TravelVibe와 함께 여정을 시작하세요.'}
         </p>
         <form onSubmit={handleSubmit} className="form-group">
@@ -94,7 +94,7 @@ export default function LoginPage() {
           </button>
         </form>
         <div className="text-center mt-3">
-          <button className="text-link" onClick={() => setIsLoginMode(!isLoginMode)}>
+          <button className="text-link-btn" onClick={() => setIsLoginMode(!isLoginMode)}>
             {isLoginMode ? '계정이 없으신가요? 회원가입' : '이미 계정이 있으신가요? 로그인'}
           </button>
         </div>

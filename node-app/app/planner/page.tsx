@@ -280,7 +280,7 @@ export default function PlannerPage() {
       <h2 className="page-title center mb-4">✨ AI 일정 만들기</h2>
       
       {step < 10 && (
-        <div style={{ display: 'flex', gap: '10px', marginBottom: '20px', overflowX: 'auto', paddingBottom: '10px' }}>
+        <div className="planner-step-nav">
           {[1,2,3,4,5,6,7,8,9].map(s => {
             // mode='AUTO' 일 때 3, 4 스킵
             if (mode === 'AUTO' && (s===3 || s===4)) return null;
@@ -291,8 +291,7 @@ export default function PlannerPage() {
               <button 
                 key={s} 
                 onClick={() => resetFromStep(s)} 
-                className={step === s ? 'primary' : 'secondary'}
-                style={{ opacity: step >= s ? 1 : 0.5, pointerEvents: step >= s ? 'auto' : 'none', flexShrink: 0 }}
+                className={`${step === s ? 'primary' : 'secondary'} step-btn ${step >= s ? 'step-active' : 'step-disabled'}`}
               >
                 Step {s}
               </button>
@@ -305,11 +304,11 @@ export default function PlannerPage() {
         {step === 1 && (
           <div>
             <h3>여행 방식 결정을 도와드릴게요!</h3>
-            <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
-              <button className="primary" style={{ flex: 1, padding: '2rem' }} onClick={() => { setMode('AUTO'); setStep(2); }}>
+            <div className="mode-selection-container">
+              <button className="primary mode-btn" onClick={() => { setMode('AUTO'); setStep(2); }}>
                 🤖 모든 계획을 AI에게 맡기기
               </button>
-              <button className="secondary" style={{ flex: 1, padding: '2rem' }} onClick={() => { setMode('MANUAL'); setStep(3); }}>
+              <button className="secondary mode-btn" onClick={() => { setMode('MANUAL'); setStep(3); }}>
                 🗺️ 내가 직접 선택하기
               </button>
             </div>
@@ -319,23 +318,21 @@ export default function PlannerPage() {
         {step === 2 && mode === 'AUTO' && (
           <div>
             <h3>어디로 떠나고 싶으신가요? (대륙 선택)</h3>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', marginBottom: '1rem' }}>
+            <div className="flex-wrap flex-gap-10 mb-1">
               {CONTINENTS.map(c => (
                 <button 
                   key={c} 
-                  className={autoLocation === c ? 'primary' : 'secondary'} 
+                  className={`${autoLocation === c ? 'primary' : 'secondary'} br-20`} 
                   onClick={() => setAutoLocation(c)}
-                  style={{ borderRadius: '20px' }}
                 >
                   {c}
                 </button>
               ))}
             </div>
             
-            <h4 className="mt-4">구체적인 국가 선택 (선택사항)</h4>
+            <h4 className="mt-2">구체적인 국가 선택 (선택사항)</h4>
             <select 
-              className="mt-2" 
-              style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #ccc' }}
+              className="mt-1 w-full p-1 br-8 border-ccc" 
               value={autoCountry}
               onChange={e => setAutoCountry(e.target.value)}
             >
@@ -347,7 +344,7 @@ export default function PlannerPage() {
               ))}
             </select>
 
-            <div className="form-actions mt-4">
+            <div className="form-actions mt-2">
               <button className="primary" onClick={() => {
                 if (!autoLocation && !autoCountry) { showAlert('대륙 또는 국가를 하나 이상 선택해주세요.'); return; }
                 setStep(5);
@@ -359,22 +356,23 @@ export default function PlannerPage() {
         {step === 3 && mode === 'MANUAL' && (
           <div>
             <h3>여행할 국가들을 선택해주세요. (중복 가능)</h3>
-            <input type="text" placeholder="국가 검색..." value={countrySearch} onChange={e => setCountrySearch(e.target.value.toLowerCase())} />
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginTop: '1rem', maxHeight: '300px', overflowY: 'auto' }}>
+            <div className="search-input-group">
+              <input type="text" placeholder="국가 검색..." value={countrySearch} onChange={e => setCountrySearch(e.target.value.toLowerCase())} />
+            </div>
+            <div className="chip-container-scroll">
               {allData.filter(d => d.country.includes(countrySearch)).map(d => {
                 return (
                   <button 
                     key={d.country} 
-                    className={selectedCountries.includes(d.country) ? 'primary' : 'secondary'}
+                    className={`${selectedCountries.includes(d.country) ? 'primary' : 'secondary'} br-20`}
                     onClick={() => toggleCountry(d.country)}
-                    style={{ borderRadius: '20px' }}
                   >
                     {d.country}
                   </button>
                 );
               })}
             </div>
-            <div className="form-actions mt-3">
+            <div className="form-actions mt-1">
               <button className="primary" onClick={() => {
                 if (selectedCountries.length === 0) { showAlert('최소 1개 이상의 국가를 선택해주세요.'); return; }
                 setStep(4);
@@ -386,13 +384,12 @@ export default function PlannerPage() {
         {step === 4 && mode === 'MANUAL' && (
           <div>
             <h3>방문하실 도시를 선택해주세요.</h3>
-            <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem', flexWrap: 'wrap' }}>
+            <div className="flex-wrap flex-gap-8 mb-1">
               {selectedCountries.map(c => (
                 <button 
                   key={c} 
-                  className={activeCountry === c ? 'primary' : 'secondary'} 
+                  className={`${activeCountry === c ? 'primary' : 'secondary'} br-20`} 
                   onClick={() => setActiveCountry(c)}
-                  style={{ borderRadius: '20px' }}
                 >
                   {c}
                 </button>
@@ -400,14 +397,15 @@ export default function PlannerPage() {
             </div>
             {activeCountry ? (
                <div>
-                  <input type="text" placeholder={`${activeCountry} 내 도시 검색...`} value={citySearch} onChange={e => setCitySearch(e.target.value.toLowerCase())} />
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginTop: '1rem', maxHeight: '300px', overflowY: 'auto' }}>
+                  <div className="search-input-group">
+                    <input type="text" placeholder={`${activeCountry} 내 도시 검색...`} value={citySearch} onChange={e => setCitySearch(e.target.value.toLowerCase())} />
+                  </div>
+                  <div className="chip-container-scroll">
                     {allData.find(d => d.country === activeCountry)?.cities.filter(c => c.includes(citySearch)).map(c => (
                       <button 
                         key={c} 
-                        className={selectedCities.includes(c) ? 'primary' : 'secondary'}
+                        className={`${selectedCities.includes(c) ? 'primary' : 'secondary'} br-20`}
                         onClick={() => toggleCity(c)}
-                        style={{ borderRadius: '20px' }}
                       >
                         {c}
                       </button>
@@ -417,7 +415,7 @@ export default function PlannerPage() {
             ) : (
                 <p className="text-muted">위에서 국가 버튼을 클릭하여 소속 도시를 확인하세요.</p>
             )}
-            <div className="form-actions mt-3">
+            <div className="form-actions mt-1">
               <button className="primary" onClick={() => {
                 if (selectedCities.length === 0) { showAlert('최소 1개 이상의 도시를 선택해주세요.'); return; }
                 setStep(5);
@@ -429,22 +427,24 @@ export default function PlannerPage() {
         {step === 5 && (
           <div>
             <h3>언제 출발하시나요?</h3>
-            <div style={{ display: 'flex', gap: '1rem' }}>
+            <div className="date-input-group">
               <input 
                 type="date" 
                 value={startDate} 
+                className="flex-1"
                 min={new Date().toISOString().split('T')[0]}
                 onChange={e => setStartDate(e.target.value)} 
               />
-              <span style={{ alignSelf: 'center' }}>~</span>
+              <span>~</span>
               <input 
                 type="date" 
                 value={endDate} 
+                className="flex-1"
                 min={startDate || new Date().toISOString().split('T')[0]} 
                 onChange={e => setEndDate(e.target.value)} 
               />
             </div>
-            <div className="form-actions mt-3">
+            <div className="form-actions mt-1">
               <button className="primary" onClick={() => {
                 if (!startDate || !endDate) { showAlert('출발일과 종료일을 정확히 선택해주세요.'); return; }
                 setStep(6);
@@ -457,7 +457,7 @@ export default function PlannerPage() {
           <div>
             <h3>총 몇 명에서 떠나시나요?</h3>
             <input type="number" min={1} max={50} value={headcount} onChange={e => setHeadcount(Number(e.target.value))} />
-            <div className="form-actions mt-3">
+            <div className="form-actions mt-1">
               <button className="primary" onClick={() => {
                 if (headcount < 1) { showAlert('인원수는 최소 1명 이상이어야 합니다.'); return; }
                 setStep(7);
@@ -469,19 +469,18 @@ export default function PlannerPage() {
         {step === 7 && (
           <div>
             <h3>누구와 함께 가나요?</h3>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
+            <div className="flex-wrap flex-gap-10">
               {['혼자', '배우자와', '연인과', '친구와', '아이와', '부모님과', '기타'].map(c => (
                 <button 
                   key={c} 
-                  className={companion === c ? 'primary' : 'secondary'} 
+                  className={`${companion === c ? 'primary' : 'secondary'} br-20 p-1`} 
                   onClick={() => setCompanion(c)}
-                  style={{ borderRadius: '20px', padding: '10px 20px' }}
                 >
                   {c}
                 </button>
               ))}
             </div>
-            <div className="form-actions mt-3">
+            <div className="form-actions mt-1">
               <button className="primary" onClick={() => {
                 if (!companion) { showAlert('동행자를 선택해주세요.'); return; }
                 setStep(8);
@@ -492,20 +491,19 @@ export default function PlannerPage() {
 
         {step === 8 && (
           <div>
-            <h3>원하시는 여행 테마(스타일)를 골라주세요. (다중 선택)</h3>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
+            <h3>원하시는 여행 테마(스타일)를 골라주세요.</h3>
+            <div className="flex-wrap flex-gap-10">
               {['휴양', '액티비티', '먹방', '쇼핑', '자연', '유명 관광지', '역사/문화'].map(s => (
                 <button 
                   key={s} 
-                  className={travelStyles.includes(s) ? 'primary' : 'secondary'} 
+                  className={`${travelStyles.includes(s) ? 'primary' : 'secondary'} br-20 p-1`} 
                   onClick={() => toggleStyle(s)}
-                  style={{ borderRadius: '20px', padding: '10px 20px' }}
                 >
                   {s}
                 </button>
               ))}
             </div>
-            <div className="form-actions mt-5">
+            <div className="form-actions mt-2">
                <button className="primary" onClick={() => {
                  if (travelStyles.length === 0) { showAlert('여행 테마를 최소 1개 이상 골라주세요.'); return; }
                  setStep(9);
@@ -517,30 +515,28 @@ export default function PlannerPage() {
         {step === 9 && (
           <div>
             <h3>여행의 템포를 결정해주세요.</h3>
-            <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
+            <div className="tempo-btn-container">
               <button 
-                className={tempo === 'BUSY' ? 'primary' : 'secondary'} 
-                style={{ flex: 1, padding: '2rem', borderRadius: '15px' }} 
+                className={`${tempo === 'BUSY' ? 'primary' : 'secondary'} tempo-btn`} 
                 onClick={() => setTempo('BUSY')}
               >
                 🏃 여행간김에 부지런히<br/>
-                <span style={{ fontSize: '0.8rem', opacity: 0.8 }}>(빽빽한 일정 선호)</span>
+                <span className="tempo-hint">(빽빽한 일정 선호)</span>
               </button>
               <button 
-                className={tempo === 'RELAX' ? 'primary' : 'secondary'} 
-                style={{ flex: 1, padding: '2rem', borderRadius: '15px' }} 
+                className={`${tempo === 'RELAX' ? 'primary' : 'secondary'} tempo-btn`} 
                 onClick={() => setTempo('RELAX')}
               >
                 🧘 여행은 쉬러 가는거지<br/>
-                <span style={{ fontSize: '0.8rem', opacity: 0.8 }}>(여유로운 휴식 선호)</span>
+                <span className="tempo-hint">(여유로운 휴식 선호)</span>
               </button>
             </div>
-            <div className="form-actions mt-5 flex-between">
+            <div className="form-actions mt-2 flex-between">
                <span className="text-muted">마지막 단계입니다!</span>
-               <button className="primary" onClick={() => {
+               <button className="primary p-2 br-12" onClick={() => {
                  if (!tempo) { showAlert('여행 템포를 선택해주세요.'); return; }
                  handleCreatePlan();
-               }} style={{ padding: '1rem 2rem', fontSize: '1.2rem' }}>
+               }}>
                  ✨ 일정 만들기 (AI 생성)
                </button>
             </div>
@@ -549,7 +545,7 @@ export default function PlannerPage() {
 
         {step === 10 && loading && (
           <div className="text-center p-5 animate-pulse">
-             <div style={{ fontSize: '4rem', marginBottom: '1rem' }}>🤖</div>
+             <div className="fs-4-rem mb-line">🤖</div>
              <h2>AI가 일정의 밀도를 조절하고 있어요...</h2>
              <p className="text-muted">보통 10~20초 정도 소요됩니다. 조금만 기다려주세요!</p>
           </div>
@@ -560,38 +556,31 @@ export default function PlannerPage() {
           return (
             <div className="animate-fade-in">
               {/* 헤더 - 여행 타이틀 */}
-             <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-               <div style={{ fontSize: '3rem', marginBottom: '0.5rem' }}>🌍</div>
-               <h2 style={{ color: '#1e293b', margin: '0 0 0.3rem 0', fontSize: '1.6rem' }}>{result.title}</h2>
-               <p className="text-muted" style={{ margin: 0 }}>AI가 추천해 준 맞춤 일정으로 여행을 떠나보세요.</p>
+             <div className="result-header-visual">
+               <div className="result-icon-lg">🌍</div>
+               <h2 className="m-0 fs-1-6 color-slate-800">{result.title}</h2>
+               <p className="text-muted m-0">AI가 추천해 준 맞춤 일정으로 여행을 떠나보세요.</p>
              </div>
 
               {/* 지도 영역 */}
-              <div style={{ borderRadius: '16px', overflow: 'hidden', marginBottom: '1.2rem', boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}>
+              <div className="map-card-wrapper">
                 {(() => {
                   const mp = activeDay.places.find(p => p.name === selectedPlace) || activeDay.places[0];
                   const src = mp ? getMapSrc(mp, result.title) : `https://maps.google.com/maps?q=${encodeURIComponent(result.title)}&z=13&output=embed`;
-                  return <iframe width="100%" height="350" style={{ border: 0, display: 'block' }} loading="lazy" allowFullScreen src={src} />;
+                  return <iframe width="100%" height="350" className="border-none block" loading="lazy" allowFullScreen src={src} />;
                 })()}
               </div>
 
               {/* 하단 상세 정보 영역 (스크린샷 스타일 반영) */}
-              <div style={{ backgroundColor: '#f8fafc', padding: '1.2rem', borderRadius: '16px', border: '1px solid #e2e8f0' }}>
+              <div className="p-1 br-16 bg-slate-50 border-slate-200">
                 {/* Day 탭 */}
-                <div style={{ display: 'flex', gap: '8px', marginBottom: '1rem', overflowX: 'auto', paddingBottom: '4px' }}>
+                <div className="day-tab-container">
                   {result.days.map((d, i) => (
                     <button
                       key={i}
                       onClick={() => { setSelectedDayIdx(i); setSelectedPlace(''); }}
-                      style={{
-                        padding: '7px 18px', borderRadius: '50px', fontSize: '0.82rem', fontWeight: '600',
-                        border: selectedDayIdx === i ? 'none' : '1px solid #e2e8f0', cursor: 'pointer', whiteSpace: 'nowrap',
-                        backgroundColor: selectedDayIdx === i ? 'var(--primary)' : '#fff',
-                        color: selectedDayIdx === i ? '#fff' : '#64748b',
-                        boxShadow: selectedDayIdx === i ? '0 3px 8px rgba(99,102,241,0.3)' : 'none',
-                        transition: 'all 0.2s',
-                        flexShrink: 0
-                      }}
+                      className={`day-tab-btn ${selectedDayIdx === i ? 'primary' : 'secondary border-slate-200 color-slate-500 bg-white shadow-none'}`}
+                      style={selectedDayIdx !== i ? { border: '1px solid #e2e8f0', backgroundColor: '#fff', color: '#64748b' } : {}}
                     >
                       {d.day}
                     </button>
@@ -603,22 +592,15 @@ export default function PlannerPage() {
                   const mp = activeDay.places.find(p => p.name === selectedPlace) || activeDay.places[0];
                   if (!mp) return null;
                   return (
-                    <div className="animate-fade-in" style={{
-                      backgroundColor: '#fff', borderRadius: '16px', padding: '1rem 1.2rem',
-                      boxShadow: '0 4px 15px rgba(0,0,0,0.05)', border: '1px solid #edf2f7',
-                      display: 'flex', alignItems: 'center', gap: '15px'
-                    }}>
-                      <div style={{
-                        width: '42px', height: '42px', borderRadius: '12px', backgroundColor: '#eff6ff',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0
-                      }}>
-                        <span style={{ fontSize: '1.4rem' }}>📍</span>
+                    <div className="place-detail-card animate-fade-in">
+                      <div className="place-icon-box">
+                        <span className="fs-1-4">📍</span>
                       </div>
-                      <div style={{ flex: 1 }}>
-                        <strong style={{ display: 'block', color: '#1e293b', fontSize: '1rem', marginBottom: '3px' }}>
+                      <div className="flex-1">
+                        <strong className="block fs-1-0 mb-line color-slate-800">
                           {mp.name}
                         </strong>
-                        <p style={{ color: '#64748b', fontSize: '0.8rem', margin: 0, lineHeight: 1.5, wordBreak: 'keep-all' }}>
+                        <p className="fs-0-8 m-0 lh-1-5 color-slate-500 word-keep-all">
                           {mp.description}
                         </p>
                       </div>
@@ -628,64 +610,47 @@ export default function PlannerPage() {
               </div>
 
              {/* 타임라인 장소 카드 */}
-             <div style={{ position: 'relative', paddingLeft: '40px' }}>
+             <div className="timeline-wrapper">
                {/* 타임라인 세로선 */}
-               <div style={{
-                 position: 'absolute', left: '18px', top: '0', bottom: '0', width: '2px',
-                 background: 'linear-gradient(to bottom, var(--primary), #c7d2fe)', borderRadius: '2px'
-               }} />
+               <div className="timeline-vertical-line" />
                
                {activeDay.places.map((p, j) => {
                  const dist = j > 0 ? calcDistance(activeDay.places[j-1].lat, activeDay.places[j-1].lng, p.lat, p.lng) : '';
-                 return (<>
+                 return (<Fragment key={j}>
                  {dist && (
-                   <div style={{
-                     display: 'flex', alignItems: 'center', gap: '6px',
-                     padding: '4px 0', color: '#94a3b8', fontSize: '0.72rem',
-                   }}>
-                     <div style={{ width: '16px', borderTop: '1px dashed #cbd5e1' }} />
-                     <span style={{ backgroundColor: '#f1f5f9', padding: '2px 8px', borderRadius: '10px', fontWeight: '500' }}>
+                   <div className="distance-badge-container">
+                     <div className="distance-dash" />
+                     <span className="distance-badge">
                        🚶 {dist}
                      </span>
                    </div>
                  )}
-                 <div key={j} style={{ position: 'relative', marginBottom: '8px' }}>
+                 <div className="relative mb-line">
                    {/* 번호 원 */}
-                   <div style={{
-                     position: 'absolute', left: '-40px', top: '10px', width: '26px', height: '26px',
-                     borderRadius: '50%', backgroundColor: selectedPlace === p.name ? 'var(--primary)' : '#818cf8',
-                     color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                     fontSize: '0.75rem', fontWeight: '700', zIndex: 1,
-                     boxShadow: '0 2px 6px rgba(99,102,241,0.4)',
-                     transition: 'all 0.2s'
-                   }}>
+                   <div 
+                      className="timeline-node-dot" 
+                      style={{ backgroundColor: selectedPlace === p.name ? 'var(--primary)' : '#818cf8' }}
+                   >
                      {j + 1}
                    </div>
                    
                    {/* 장소 카드 */}
                    <div
                      onClick={() => setSelectedPlace(p.name)}
-                     style={{
-                       padding: '12px 16px', borderRadius: '12px', cursor: 'pointer',
-                       backgroundColor: selectedPlace === p.name ? '#eef2ff' : '#fff',
-                       border: selectedPlace === p.name ? '2px solid var(--primary)' : '1px solid #e2e8f0',
-                       boxShadow: selectedPlace === p.name ? '0 4px 12px rgba(99,102,241,0.15)' : '0 1px 3px rgba(0,0,0,0.04)',
-                       transition: 'all 0.2s',
-                       wordBreak: 'keep-all'
-                     }}
+                     className={`itinerary-item-card ${selectedPlace === p.name ? 'active' : ''}`}
                    >
-                     <strong style={{ display: 'block', color: '#1e293b', fontSize: '0.95rem', marginBottom: '3px' }}>
+                     <strong className="block fs-0-95 mb-line color-slate-800">
                        {p.name}
                      </strong>
-                     <span style={{ color: '#64748b', fontSize: '0.8rem', lineHeight: 1.5 }}>{p.description}</span>
+                     <span className="fs-0-8 lh-1-5 color-slate-500">{p.description}</span>
                      {selectedPlace === p.name && (
-                       <div style={{ marginTop: '6px', color: 'var(--primary)', fontSize: '0.75rem', fontWeight: '600' }}>
+                       <div className="mt-line fw-600 color-primary fs-0-75">
                          📍 지도에서 보기
                        </div>
                      )}
                    </div>
                  </div>
-                 </>);
+                 </Fragment>);
                })}
              </div>
 

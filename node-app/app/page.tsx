@@ -20,7 +20,7 @@ export default function Home() {
   return (
     <div className="home-container">
       {/* Section 2: 간단한 소개 화면 (Hero) */}
-      <section className="hero-section" style={{ backgroundImage: "url('/aurora.png')" }}>
+      <section className="hero-section">
         <div className="hero-overlay"></div>
         <div className="hero-content animate-fade-in">
           <h2>AI와 함께 일정을 만드는 TravelVibe</h2>
@@ -40,9 +40,9 @@ export default function Home() {
           <div className="ai-visual-content">
             {/* Style Selection Card */}
             <div className="floating-card style-card">
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-                <span style={{ fontSize: '1.2rem' }}>🎨</span>
-                <h3 style={{ margin: 0 }}>원하시는 여행 테마(스타일)를 골라주세요.</h3>
+              <div className="card-title-flex">
+                <span className="card-icon-sm">🎨</span>
+                <h3 className="m-0">원하시는 여행 테마(스타일)를 골라주세요.</h3>
               </div>
               <div className="chip-container">
                 <div className="chip active">휴양</div>
@@ -58,13 +58,13 @@ export default function Home() {
             {/* Itinerary Result Card */}
             <div className="floating-card result-card">
               <div className="result-header">
-                <div style={{ width: '40px', height: '40px', borderRadius: '50%', overflow: 'hidden', margin: '0 auto 12px' }}>
-                  <img src="/danang_view.png" alt="Da Nang" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                <div className="result-avatar-wrapper">
+                  <img src="/travel_photo.png" alt="Destination View" className="img-full-cover" />
                 </div>
                 <h3>다낭, 3박 4일<br/><span>추천일정</span>입니다.</h3>
-                <p style={{ fontSize: '0.75rem', color: '#94a3b8', marginTop: '4px' }}>TravelVibe가 알려준 맞춤일정으로 여행을 떠나보세요.</p>
+                <p className="result-footer-p">TravelVibe가 알려준 맞춤일정으로 여행을 떠나보세요.</p>
               </div>
-              <img src="/itinerary_ui.png" className="map-img" alt="Itinerary View" style={{ objectPosition: 'top' }} />
+              <img src="/travel_map.png" className="map-img" alt="Travel Route Map" />
             </div>
           </div>
         </div>

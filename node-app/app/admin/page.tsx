@@ -99,7 +99,7 @@ export default function AdminPage() {
                   </span>
                 </td>
                 <td>
-                  <span style={{ color: u.status === 'DELETED' ? 'red' : 'green', fontWeight: 'bold' }}>
+                  <span className={u.status === 'DELETED' ? 'status-red' : 'status-green'}>
                     {u.status === 'DELETED' ? '탈퇴' : '정상'}
                   </span>
                 </td>

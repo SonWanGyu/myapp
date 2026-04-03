@@ -37,7 +37,7 @@ export default function Header(): React.ReactElement | null {
         )}
 
         <div className="dropdown">
-          <div className="dropdown-btn" style={{ fontSize: '1.5rem', padding: '0.2rem 0.5rem', border: 'none', cursor: 'pointer' }}>☰</div>
+          <div className="hamburger-btn">☰</div>
           <div className="dropdown-content">
             <Link href="/planner">AI 추천 맞춤일정</Link>
             <Link href={isAuthenticated ? "/my-itinerary" : "/login"}>내 일정</Link>
