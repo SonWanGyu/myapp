@@ -325,10 +325,10 @@ textarea { resize: vertical; min-height: 200px; }
   min-width: 380px;
   height: 100%;
   overflow-y: auto;
-  overflow-x: visible; /* hidden -> visible (숫자 짤림 방지) */
+  overflow-x: visible; /* 짤림 방지 */
   background-color: #fff;
   border-right: 1px solid #e2e8f0;
-  padding: 24px 20px; /* 30px -> 20px (공간 효율화) */
+  padding: 24px 20px 24px 35px; /* 왼쪽 여백 35px로 대폭 확장 */
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
@@ -379,13 +379,13 @@ textarea { resize: vertical; min-height: 200px; }
 /* New Flex Timeline Structure for Detail Page */
 .timeline-row {
   display: flex;
-  gap: 12px;
+  gap: 8px; /* 12px -> 8px 축소 (밀착화) */
   margin-bottom: 20px;
 }
 
 .timeline-left {
   position: relative;
-  width: 24px; /* 최소 너비 */
+  width: 30px; /* 24px -> 30px 확장 (안정성 확보) */
   display: flex;
   flex-direction: column;
   align-items: center;
