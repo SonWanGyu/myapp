@@ -223,10 +223,10 @@ textarea { resize: vertical; min-height: 200px; }
 }
 
 .chip.active {
-  background: #fff;
-  border-color: #3b82f6;
-  color: #3b82f6;
-  box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.1);
+  background: #2563eb;
+  border-color: #2563eb;
+  color: #fff;
+  box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);
 }
 
 .result-card {

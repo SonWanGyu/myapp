@@ -33,7 +33,7 @@ export default function Home() {
         <div className="ai-container">
           <div className="ai-text-content animate-fade-in">
             <h2>어떤 취향이든, 다 맞춰주니까</h2>
-            <p>어떤 여행 취향이든 트리플에게 간단히 알려만 주세요. 트리플 AI는 여러분의 취향에 꼭 맞는 일정을 추천해 드립니다.</p>
+            <p>어떤 여행 취향이든 TravelVibe에게 간단히 알려만 주세요. TravelVibe AI는 여러분의 취향에 꼭 맞는 일정을 추천해 드립니다.</p>
             <button className="ai-btn-new" onClick={() => router.push('/planner')}>AI일정 만들어보기</button>
           </div>
           
@@ -41,16 +41,17 @@ export default function Home() {
             {/* Style Selection Card */}
             <div className="floating-card style-card">
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-                <span style={{ fontSize: '1.2rem' }}>📷</span>
-                <h3 style={{ margin: 0 }}>내가 선호하는 여행 스타일은?</h3>
+                <span style={{ fontSize: '1.2rem' }}>🎨</span>
+                <h3 style={{ margin: 0 }}>원하시는 여행 테마(스타일)를 골라주세요.</h3>
               </div>
-              <p style={{ fontSize: '0.8rem', color: '#94a3b8', marginTop: '-8px', marginBottom: '16px' }}>다중 선택이 가능해요.</p>
               <div className="chip-container">
-                <div className="chip">유명 관광지 필수</div>
-                <div className="chip active">SNS 핫플레이스</div>
-                <div className="chip active">여유롭게 힐링</div>
-                <div className="chip">문화·예술·역사</div>
-                <div className="chip">관광보다 먹방</div>
+                <div className="chip active">휴양</div>
+                <div className="chip">액티비티</div>
+                <div className="chip">먹방</div>
+                <div className="chip">쇼핑</div>
+                <div className="chip">자연</div>
+                <div className="chip">유명 관광지</div>
+                <div className="chip">역사/문화</div>
               </div>
             </div>
 
@@ -61,9 +62,9 @@ export default function Home() {
                   <img src="/danang_view.png" alt="Da Nang" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                 </div>
                 <h3>다낭, 3박 4일<br/><span>추천일정</span>입니다.</h3>
-                <p style={{ fontSize: '0.75rem', color: '#94a3b8', marginTop: '4px' }}>트리플이 알려준 맞춤일정으로 여행을 떠나보세요.</p>
+                <p style={{ fontSize: '0.75rem', color: '#94a3b8', marginTop: '4px' }}>TravelVibe가 알려준 맞춤일정으로 여행을 떠나보세요.</p>
               </div>
-              <img src="/city_map_ui.png" className="map-img" alt="Map View" />
+              <img src="/itinerary_ui.png" className="map-img" alt="Itinerary View" style={{ objectPosition: 'top' }} />
             </div>
           </div>
         </div>
