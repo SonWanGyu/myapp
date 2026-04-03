@@ -135,40 +135,41 @@ export default function ItineraryDetailPage() {
 
         {/* 타임라인 장소 목록 */}
         <div className="timeline-mini">
-          <div className="timeline-mini-line" />
-
           {activeDay.places.map((p, j) => {
             const dist = j > 0 ? calcDistance(activeDay.places[j - 1].lat, activeDay.places[j - 1].lng, p.lat, p.lng) : '';
             return (
-              <div key={j}>
-                {/* 거리 표시 (트리플 스타일) */}
-                {dist && (
-                  <div className="distance-badge-container py-line">
-                    <div className="distance-dash" />
-                    <span className="distance-badge">
-                      🚶 {dist}
-                    </span>
-                  </div>
-                )}
-
-                <div className="relative mb-line">
-                  {/* 번호 */}
+              <div key={j} className="timeline-row">
+                {/* 좌측: 선과 숫자 */}
+                <div className="timeline-left">
+                  <div className="timeline-mini-line" />
                   <div 
                     className="timeline-mini-node"
                     style={{ backgroundColor: selectedPlace === p.name ? 'var(--primary)' : '#818cf8', color: '#fff' }}
                   >
                     {j + 1}
                   </div>
+                </div>
+
+                {/* 우측: 거리 및 카드 */}
+                <div className="timeline-right">
+                  {/* 거리 표시 (이전 항목과의 거리) */}
+                  {dist && (
+                    <div className="distance-badge-container py-line" style={{ marginTop: '-20px', marginBottom: '5px' }}>
+                      <span className="distance-badge" style={{ fontSize: '0.7rem' }}>
+                        🚶 {dist}
+                      </span>
+                    </div>
+                  )}
 
                   {/* 카드 */}
                   <div
                     onClick={() => setSelectedPlace(p.name)}
                     className={`itinerary-card-sm ${selectedPlace === p.name ? 'active' : ''}`}
                   >
-                    <strong className="block color-slate-800 fs-0-85 mb-line lh-1-4">
+                    <strong className="block color-slate-800 fs-0-8 mb-line lh-1-4">
                       {p.name}
                     </strong>
-                    <span className="color-slate-500 fs-0-75 lh-1-5 block word-keep-all">
+                    <span className="color-slate-500 fs-0-7 lh-1-5 block word-keep-all">
                       {p.description}
                     </span>
                     {selectedPlace === p.name && (

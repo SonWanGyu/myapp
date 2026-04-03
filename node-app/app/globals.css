@@ -317,7 +317,7 @@ textarea { resize: vertical; min-height: 200px; }
 .detail-page-wrapper {
   display: flex;
   height: calc(100vh - 70px);
-  overflow: hidden;
+  overflow: visible; /* 짤림 방지 */
 }
 
 .left-panel {
@@ -373,25 +373,47 @@ textarea { resize: vertical; min-height: 200px; }
 
 .timeline-mini {
   position: relative;
-  padding-left: 40px; /* 양수 좌표 기반으로 개편 */
+  /* padding-left 제거: Flex 구조로 대체 */
+}
+
+/* New Flex Timeline Structure for Detail Page */
+.timeline-row {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.timeline-left {
+  position: relative;
+  width: 24px; /* 최소 너비 */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.timeline-right {
+  flex: 1;
+  min-width: 0;
 }
 
 .timeline-mini-line {
   position: absolute;
-  left: 15px; /* 선 위치 */
+  left: 50%;
   top: 0;
   bottom: 0;
   width: 2px;
+  transform: translateX(-50%);
   background: linear-gradient(to bottom, var(--primary), #c7d2fe);
+  z-index: 1;
 }
 
 .timeline-mini-node {
-  position: absolute;
-  left: 4px; /* 선(15px) 중앙 정렬: 15 - 11 = 4 */
-  top: 10px;
+  position: relative;
   width: 22px;
   height: 22px;
   border-radius: 50%;
+  background-color: var(--primary);
   color: #fff !important;
   display: flex;
   align-items: center;
@@ -400,6 +422,7 @@ textarea { resize: vertical; min-height: 200px; }
   font-weight: 700;
   z-index: 5;
   box-shadow: 0 2px 6px rgba(99,102,241,0.35);
+  margin-top: 10px;
 }
 
 .itinerary-card-sm {
