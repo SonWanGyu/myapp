@@ -106,36 +106,6 @@ myFirstAntigravityProject/
 └── README.md
 ```
 
----
-
-## 🚀 시작하기 (Getting Started)
-
-### 사전 요구 사항
-- Docker Desktop
-- Minikube
-- Node.js (v18+)
-- Java (v15+)
-
-### 실행 방법
-1. **서버 총괄 기동**
-   ```bash
-   cd ~/myapp && bash restart.sh
-   ```
-2. **포트 포워딩 설정 (필수)**
-   ```bash
-   # 터미널 A (프론트엔드)
-   kubectl port-forward svc/node-app-service 3000:3000 --address 0.0.0.0
-   
-   # 터미널 B (백엔드)
-   kubectl port-forward svc/spring-boot-service 8080:8080 --address 0.0.0.0
-   ```
-3. **접속 주소**
-   - 프론트엔드: `http://localhost:3000`
-   - 백엔드 API: `http://localhost:8080`
-   - Jenkins: `http://localhost:8090`
-
----
-
 ## 🤝 CI/CD 파이프라인
 프로젝트는 **Jenkins Pipeline (Groovy)**를 사용하여 지속적 통합 및 배포를 수행합니다.
 1. Git Commit & Push
