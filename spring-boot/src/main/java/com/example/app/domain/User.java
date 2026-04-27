@@ -1,8 +1,6 @@
 package com.example.app.domain;
 
 import javax.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
 import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
