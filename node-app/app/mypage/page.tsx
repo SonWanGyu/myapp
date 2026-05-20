@@ -52,12 +52,12 @@ export default function MyPage() {
          <h2 className="page-title center">👤 마이페이지</h2>
          
          <div className="form-group mt-3">
-           <label className="fw-500">이메일 (변경 불가)</label>
+           <label className="fw-500">이메일</label>
            <input type="text" value={currentUser.email} disabled className="input-disabled" />
          </div>
 
          <div className="form-group mt-3">
-           <label className="fw-500">이름 (변경 불가)</label>
+           <label className="fw-500">이름</label>
            <input type="text" value={name} disabled className="input-disabled" />
          </div>
          
